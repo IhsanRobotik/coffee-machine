@@ -179,8 +179,9 @@ function generateNewPayment() {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 400,
-    height: 700,
+    width: 1024,
+    height: 600,
+    // frame: false, // Makes the window frameless (hides title bar, minimize, maximize, and close buttons)
     webPreferences: {
       preload: path.join(__dirname, 'renderer.js'),
     },

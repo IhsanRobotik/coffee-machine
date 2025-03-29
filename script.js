@@ -1,26 +1,43 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const display = document.getElementById('display');
-    const keys = document.querySelectorAll('.key');
-    const cancelButton = document.getElementById('cancel-button');
+    const coffeeList = document.getElementById('coffeeList');
 
-    keys.forEach(key => {
-        key.addEventListener('click', () => {
-            const keyValue = key.getAttribute('data-key');
-            if (key.classList.contains('clear')) {
-                display.value = '';
-            } else if (key.classList.contains('enter')) {
-                window.electronAPI.logInput(display.value);
-                window.electronAPI.processPayment(display.value);
-                display.value = '';
-            } else {
-                display.value += keyValue;
-            }
-        });
+    // Listen for clicks on coffee images
+    coffeeList.addEventListener('click', (event) => {
+        if (event.target.tagName === 'IMG') {
+            const coffeeIndex = event.target.dataset.index;
+            console.log(`Selected coffee index: ${coffeeIndex}`);
+            window.electronAPI.logInput(`${coffeeIndex}`);
+        }
     });
 
-    if (cancelButton) {
-        cancelButton.addEventListener('click', () => {
-            window.electronAPI.cancelPayment();
+    // Fetch JSON data and render the coffee items
+    fetch('../products.json')
+        .then((response) => response.json())
+        .then((data) => {
+            Object.keys(data).forEach((key) => {
+                const coffee = data[key];
+                const coffeeItem = document.createElement('div');
+                coffeeItem.classList.add('coffee-item');
+
+                const coffeeImage = document.createElement('img');
+                coffeeImage.src = coffee.imagePath;
+                coffeeImage.dataset.index = key;
+                coffeeImage.alt = coffee.description;
+
+                const coffeePrice = document.createElement('p');
+                coffeePrice.classList.add('price');
+                coffeePrice.textContent = `${coffee.price}`;
+
+                coffeeItem.appendChild(coffeeImage);
+                coffeeItem.appendChild(coffeePrice);
+                coffeeList.appendChild(coffeeItem);
+            });
+
+            // Now that items are appended, clone them and setup infinite scroll
+            cloneItems();
+            setupInfiniteScroll();
+        })
+        .catch((error) => {
+            console.error('Error fetching coffee data:', error);
         });
-    }
 });

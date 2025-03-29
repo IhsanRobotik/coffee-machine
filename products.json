@@ -1,38 +1,47 @@
 {
   "1": {
-    "price": 69,
-    "description": "lets have sex"
+    "price": 200,
+    "description": "Espresso",
+    "imagePath": "../images/coffee-drinks_espresso.webp"
   },
   "2": {
-    "price": 90000,
-    "description": "test"
+    "price": 250,
+    "description": "Americano",
+    "imagePath": "../images/coffee-drinks_americano.webp"
   },
   "3": {
-    "price": 98342,
-    "description": "ahhh"
+    "price": 300,
+    "description": "Breve",
+    "imagePath": "../images/coffee-drinks_breve.webp"
   },
   "4": {
-    "price": 40000,
-    "description": "Chocolate"
+    "price": 350,
+    "description": "Caffe Latte",
+    "imagePath": "../images/coffee-drinks_caffe-latte.webp"
   },
   "5": {
-    "price": 103912,
-    "description": "niggeeer"
+    "price": 300,
+    "description": "Cappuccino",
+    "imagePath": "../images/coffee-drinks_cappuccino.webp"
   },
   "6": {
-    "price": 60000,
-    "description": "Water"
+    "price": 280,
+    "description": "Cortado",
+    "imagePath": "../images/coffee-drinks_cortado.webp"
   },
   "7": {
-    "price": 69420,
-    "description": "seven eleven"
+    "price": 320,
+    "description": "Double Espresso",
+    "imagePath": "../images/coffee-drinks_double-espresso.webp"
   },
   "8": {
-    "price": 1,
-    "description": "sd"
+    "price": 300,
+    "description": "Flat White",
+    "imagePath": "../images/coffee-drinks_flat-white.webp"
   },
   "9": {
-    "price": 8999,
-    "description": "jjj"
+    "price": 270,
+    "description": "Macchiato",
+    "imagePath": "../images/coffee-drinks_macchiato.webp"
   }
 }
