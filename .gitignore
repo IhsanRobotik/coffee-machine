@@ -104,12 +104,15 @@ dist
 .temp
 .cache
 
+<<<<<<< HEAD
 # vitepress build output
 **/.vitepress/dist
 
 # vitepress cache directory
 **/.vitepress/cache
 
+=======
+>>>>>>> cae13aa (first commit from vending)
 # Docusaurus cache and generated files
 .docusaurus
 
@@ -134,3 +137,12 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+<<<<<<< HEAD
+=======
+
+# Ignore package-lock.json
+package-lock.json
+
+# Ignore node_modules directory
+node_modules/
+>>>>>>> cae13aa (first commit from vending)

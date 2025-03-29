@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code</title>
+    <link rel="stylesheet" href="../css/qr.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Please scan the QRIS</h1>
+        <p id="product-info"></p>
+        <img id="qr-image" src="" alt="QR Code">
+        <p id="timer">Time remaining: 05:00</p>
+        <button id="cancel-button">Cancel Payment</button>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const qrisUrl = urlParams.get('qris_url');
+        const description = urlParams.get('description');
+        const price = urlParams.get('price');
+        document.getElementById('qr-image').src = qrisUrl;
+        document.getElementById('product-info').textContent = `Product: ${description}, Price: ${price}`;
+
+        document.getElementById('cancel-button').addEventListener('click', () => {
+            window.electronAPI.cancelPayment();
+        });
+
+        // Timer logic
+        let timeRemaining = 300; // 5 minutes in seconds
+        const timerElement = document.getElementById('timer');
+
+        const updateTimer = () => {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            timerElement.textContent = `Time remaining: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            if (timeRemaining > 0) {
+                timeRemaining--;
+            } else {
+                window.electronAPI.cancelPayment();
+            }
+        };
+
+        setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>
