@@ -145,4 +145,8 @@ package-lock.json
 
 # Ignore node_modules directory
 node_modules/
+<<<<<<< HEAD
 >>>>>>> cae13aa (first commit from vending)
+=======
+.qodo
+>>>>>>> e91a3d4 (added qr css and format for prices)

@@ -26,17 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const coffeePrice = document.createElement('p');
                 coffeePrice.classList.add('price');
-                coffeePrice.textContent = `${coffee.price}`;
-
+                coffeePrice.textContent = `Rp. ${coffee.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+                
                 coffeeItem.appendChild(coffeeImage);
                 coffeeItem.appendChild(coffeePrice);
                 coffeeList.appendChild(coffeeItem);
             });
-
-            // Now that items are appended, clone them and setup infinite scroll
-            cloneItems();
-            setupInfiniteScroll();
         })
+        
         .catch((error) => {
             console.error('Error fetching coffee data:', error);
         });

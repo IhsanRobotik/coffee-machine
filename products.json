@@ -1,46 +1,46 @@
 {
   "1": {
-    "price": 200,
+    "price": 200000,
     "description": "Espresso",
     "imagePath": "../images/coffee-drinks_espresso.webp"
   },
   "2": {
-    "price": 250,
+    "price": 250000,
     "description": "Americano",
     "imagePath": "../images/coffee-drinks_americano.webp"
   },
   "3": {
-    "price": 300,
+    "price": 300000,
     "description": "Breve",
     "imagePath": "../images/coffee-drinks_breve.webp"
   },
   "4": {
-    "price": 350,
+    "price": 350000,
     "description": "Caffe Latte",
     "imagePath": "../images/coffee-drinks_caffe-latte.webp"
   },
   "5": {
-    "price": 300,
+    "price": 300000,
     "description": "Cappuccino",
     "imagePath": "../images/coffee-drinks_cappuccino.webp"
   },
   "6": {
-    "price": 280,
+    "price": 280000,
     "description": "Cortado",
     "imagePath": "../images/coffee-drinks_cortado.webp"
   },
   "7": {
-    "price": 320,
+    "price": 320000,
     "description": "Double Espresso",
     "imagePath": "../images/coffee-drinks_double-espresso.webp"
   },
   "8": {
-    "price": 300,
+    "price": 300000,
     "description": "Flat White",
     "imagePath": "../images/coffee-drinks_flat-white.webp"
   },
   "9": {
-    "price": 270,
+    "price": 270000,
     "description": "Macchiato",
     "imagePath": "../images/coffee-drinks_macchiato.webp"
   }
