@@ -1,12 +1,11 @@
-//this code uses core api instead of snap
 const { spawn } = require('child_process');
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron'); // Electron app
 const path = require('path');
 const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
-
-// require('./endpointServer.js');
+const express = require('express');
+const expressApp = express(); // Rename the express app variable
 
 let mainWindow;
 let transactionId = uuidv4();
@@ -22,7 +21,46 @@ const headers = {
   'Authorization': authorization
 };
 
+const monitorpayment = async () => {
+  expressApp.use(express.json()); // Use expressApp instead of app
+
+  expressApp.post('/midtrans/callback', (req, res) => {
+    console.log('Received:', req.body);
+
+    // Verify the order_id matches the current transactionId
+    if (req.body.order_id !== transactionId) {
+      console.error('Order ID mismatch. Possible unauthorized callback.');
+      return res.status(400).json({ message: 'hi' });
+    }
+
+    // Check the transaction status
+    if (req.body.transaction_status === 'settlement') {
+      // Load success.html in the main window
+      mainWindow.loadFile('./html/success.html');
+      setTimeout(() => {
+        mainWindow.loadFile('./html/index.html');
+      }, 2000);
+
+    } else if (req.body.transaction_status === 'expire') {
+      // Load expired.html in the main window
+      mainWindow.loadFile('./html/expired.html');
+      setTimeout(() => {
+        mainWindow.loadFile('./html/index.html');
+      }, 2000);
+
+    } else {
+      console.log('-------------------------------------------------------------');
+    }
+
+    res.json({ message: 'received' });
+  });
+
+  expressApp.listen(5000, () => console.log('Server running on port 5000'));
+};
+
 const createPayment = async (input) => {
+  // Generate a unique transaction ID using uuid
+  transactionId = uuidv4(); // Update the transactionId variable
   const payload = {
     "transaction_details": {
       "order_id": transactionId,
@@ -40,7 +78,7 @@ const createPayment = async (input) => {
 
   try {
     const response = await axios.post(baseUrl, payload, { headers });
-    console.log('Payment created successfully:', response.data);
+    // console.log('Payment created successfully:', response.data);
     const qris_url = response.data.actions[0].url;
     const description = product[input].description;
     const price = product[input].price;
@@ -49,6 +87,8 @@ const createPayment = async (input) => {
     // Load the qris_url, description, and price in the main window
     mainWindow.loadURL(`file://${__dirname}/html/qr.html?qris_url=${encodeURIComponent(qris_url)}&description=${encodeURIComponent(description)}&price=${encodeURIComponent(price)}`);
 
+    monitorpayment();
+    
   } catch (error) {
     if (error.response) {
       console.error('Error creating payment:', error.response.data);
@@ -73,29 +113,10 @@ const cancelPayment = async () => {
 
   try {
     const response = await axios.post(url, {}, options);
-    console.log('Payment cancelled successfully:', response.data);
+    // console.log('Payment cancelled successfully:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error cancelling payment:', error);
-    return null;
-  }
-};
-
-const checkPaymentStatus = async () => {
-  const url = `https://api.sandbox.midtrans.com/v2/${transactionId}/status`;
-  const options = {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      Authorization: authorization
-    }
-  };
-
-  try {
-    const response = await axios.get(url, options);
-    return response.data;
-  } catch (error) {
-    console.error('Error checking payment status:', error);
     return null;
   }
 };
@@ -123,59 +144,6 @@ function runPythonScript(scriptPath, args) {
     console.log(`child process exited with code ${code}`);
     console.log(data);
   });
-}
-
-const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-const monitorPaymentStatus = async () => {
-  let paymentStatus = null;
-  const settlement = 'settlement';
-  const expire = 'expire';
-  let isCancelled = false;
-
-  ipcMain.once('cancel-payment', () => {
-    isCancelled = true;
-  });
-
-  while (paymentStatus !== settlement && !isCancelled && paymentStatus !== expire) {
-    const statusResponse = await checkPaymentStatus();
-    paymentStatus = statusResponse.transaction_status;
-    console.log('Payment status:', paymentStatus);
-    
-    if (!isCancelled && paymentStatus !== settlement && paymentStatus !== expire) {
-      for (let i = 0; i < 20; i++) { // Check every 100ms for a total of 2000ms
-        if (isCancelled || paymentStatus === settlement || paymentStatus === expire) break;
-        await wait(100);
-      }
-    }
-  }
-
-  if (isCancelled) {
-    mainWindow.loadFile('./html/cancelled.html');
-    cancelPayment();
-    generateNewPayment();
-    await wait(2000);
-    mainWindow.loadFile('./html/index.html');
-  } else if (paymentStatus === settlement) {
-    runPythonScript('./python/ass.py', [100,23]);
-    mainWindow.loadFile('./html/success.html'); 
-    generateNewPayment();
-    await wait(2000);
-    mainWindow.loadFile('./html/index.html');
-  } else if (paymentStatus === expire) { 
-    mainWindow.loadFile('./html/expired.html')
-    generateNewPayment();
-    await wait(2000);
-    mainWindow.loadFile('./html/index.html')
-  } else {
-    cancelPayment();
-    generateNewPayment();
-  }
-};
-
-function generateNewPayment() {
-  transactionId = uuidv4();
-  console.log('New transaction ID:', transactionId);
 }
 
 function createWindow() {
@@ -208,15 +176,15 @@ app.on('activate', () => {
 
 ipcMain.on('log-input', (event, input) => {
   console.log('Entered:', input);
-  if (product[input] && product[input].price>0) {
-    createPayment(input).then(() => monitorPaymentStatus());
-  } 
-  else {
-    mainWindow.loadFile('./html/noProduct.html');
-    setTimeout(() => {
-      mainWindow.loadFile('./html/index.html');
-    }, 2000);
-  }
+  createPayment(input);
+});
+
+ipcMain.on('cancel-payment', () => {
+  cancelPayment();
+  mainWindow.loadFile('./html/cancelled.html');
+  setTimeout(() => {
+    mainWindow.loadFile('./html/index.html');
+  }, 2000); // Show cancel.html for 2 seconds
 });
 
 ipcMain.on('exit-application', () => {
