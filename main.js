@@ -6,6 +6,8 @@ const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 
+// require('./endpointServer.js');
+
 let mainWindow;
 let transactionId = uuidv4();
 
@@ -135,7 +137,6 @@ const monitorPaymentStatus = async () => {
     isCancelled = true;
   });
 
-  //skip wait logic
   while (paymentStatus !== settlement && !isCancelled && paymentStatus !== expire) {
     const statusResponse = await checkPaymentStatus();
     paymentStatus = statusResponse.transaction_status;
@@ -211,35 +212,11 @@ ipcMain.on('log-input', (event, input) => {
     createPayment(input).then(() => monitorPaymentStatus());
   } 
   else {
-    console.log('Invalid input:', input);
-    if (Number(input) === 69) {
-      console.log('Exiting application...');
-      app.quit();
-    }
-    if (Number(input) === 420) {
-      console.log('modifying product data...');
-      mainWindow.loadFile('./html/modify.html'); 
-    }
-    else{
-      mainWindow.loadFile('./html/noProduct.html');
-      setTimeout(() => {
-        mainWindow.loadFile('./html/index.html');
-      }, 2000);
-    }
+    mainWindow.loadFile('./html/noProduct.html');
+    setTimeout(() => {
+      mainWindow.loadFile('./html/index.html');
+    }, 2000);
   }
-});
-
-ipcMain.on('modify-product', (event, { id, description, price }) => {
-    if (product[id]) {
-        product[id].description = description;
-        product[id].price = parseInt(price, 10);
-        fs.writeFileSync(productFilePath, JSON.stringify(product, null, 2));
-        console.log(`Product ${id} modified successfully.`);
-        mainWindow.webContents.send('modification-success', `Product ${id} modified successfully.`);
-    } else {
-        console.log(`Product ${id} not found.`);
-        mainWindow.webContents.send('modification-failure', `Product ${id} not found.`);
-    }
 });
 
 ipcMain.on('exit-application', () => {
