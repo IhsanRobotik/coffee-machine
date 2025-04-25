@@ -1,7 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
+img {
+  user-drag: none;
+  -webkit-user-drag: none;
+  pointer-events: auto; /* optional: allows clicks if needed */
+}
+
+* {
+  user-select: none;
+  -webkit-user-select: none; /* For Chromium (Electron) */
+}
+
+
 ::-webkit-scrollbar {
   display: none;
+}
+
+.scrollable {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Enables momentum scrolling on iOS */
+  touch-action: pan-y; /* Allows vertical panning */
 }
 
 :root {
@@ -28,6 +46,7 @@
 }
 
 body {
+  cursor: none;
   display: flex;
   justify-content: center;
   align-items: center;
