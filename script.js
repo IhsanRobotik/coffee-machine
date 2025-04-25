@@ -24,16 +24,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 coffeeImage.dataset.index = key;
                 coffeeImage.alt = coffee.description;
 
+                const coffeeDescription = document.createElement('p');
+                coffeeDescription.classList.add('description');
+                coffeeDescription.textContent = coffee.description;
+
                 const coffeePrice = document.createElement('p');
                 coffeePrice.classList.add('price');
                 coffeePrice.textContent = `Rp. ${coffee.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
-                
+
                 coffeeItem.appendChild(coffeeImage);
+                coffeeItem.appendChild(coffeeDescription); // Append description
                 coffeeItem.appendChild(coffeePrice);
                 coffeeList.appendChild(coffeeItem);
             });
         })
-        
         .catch((error) => {
             console.error('Error fetching coffee data:', error);
         });

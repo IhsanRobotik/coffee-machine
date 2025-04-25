@@ -3,38 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Payment</title>
+    <title>QR Code</title>
     <link rel="stylesheet" href="../css/qr.css">
 </head>
 <body>
     <div class="container">
-        <div class="content-left">
-            <h1>Please scan the QRIS</h1>
-            <p id="product-info"></p>
-            <p id="timer">Time remaining: 05:00</p>
-            <button id="cancel-button">Cancel Payment</button>
-            <div class="payment-status">
-                <div class="status-indicator"></div>
-                <span>Waiting for payment...</span>
-            </div>
+        <h1>Please scan the QRIS</h1>
+        <p id="product-info"></p>
+        <div id="qr-placeholder">
+            <div class="spinner"></div>
         </div>
-        <div class="content-right">
-            <img id="qr-image" src="" alt="QR Code">
-        </div>
+        <img id="qr-image" src="" alt="QR Code" style="display: none;">
+        <p id="timer">Time remaining: 05:00</p>
+        <button id="cancel-button">Cancel Payment</button>
     </div>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const qrisUrl = urlParams.get('qris_url');
         const description = urlParams.get('description');
         const price = urlParams.get('price');
-        document.getElementById('qr-image').src = qrisUrl;
-        document.getElementById('product-info').textContent = `Product: ${description}, Price: Rp. ${parseInt(price).toLocaleString('id-ID')}`;
+        const qrImage = document.getElementById('qr-image');
+        const qrPlaceholder = document.getElementById('qr-placeholder');
+
+        document.getElementById('product-info').textContent = `Product: ${description}, Price: ${price}`;
+        qrImage.src = qrisUrl;
+
+        qrImage.onload = () => {
+            qrPlaceholder.style.display = 'none';
+            qrImage.style.display = 'block';
+        };
+
         document.getElementById('cancel-button').addEventListener('click', () => {
             window.electronAPI.cancelPayment();
         });
+
         // Timer logic
         let timeRemaining = 300; // 5 minutes in seconds
         const timerElement = document.getElementById('timer');
+
         const updateTimer = () => {
             const minutes = Math.floor(timeRemaining / 60);
             const seconds = timeRemaining % 60;
@@ -45,7 +51,31 @@
                 window.electronAPI.cancelPayment();
             }
         };
+
         setInterval(updateTimer, 1000);
     </script>
+    <style>
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #qr-placeholder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px; /* Adjust height as needed */
+        }
+    </style>
 </body>
 </html>

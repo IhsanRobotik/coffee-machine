@@ -1,102 +1,127 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+:root {
+  --bg-color: #f5f5f5;
+  --overlay-color: rgba(255,255,255,0.6);
+  --text-color: #333;
+  --card-bg: #fff;
+  --shadow-light: rgba(255,255,255,0.8);
+  --shadow-dark: rgba(0,0,0,0.1);
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --font-base: 'Roboto', sans-serif;
+  --fs-xl: clamp(1.5rem, 5vw, 2.5rem);
+  --fs-lg: clamp(1.25rem, 4vw, 2rem);
+  --fs-md: 1rem;
+  --line-height: 1.6;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-    background-image: url('../images/wallpaper.jpg'); /* Correct syntax with url() */
-    background-size: cover; /* Ensures the image covers the entire screen */
-    background-position: center; /* Centers the image */
-    background-repeat: no-repeat; /* Prevents tiling */
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f5f5f5; /* Fallback background color */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: var(--font-base);
+  font-size: var(--fs-md);
+  line-height: var(--line-height);
+  color: var(--text-color);
+  background: var(--bg-color) url('../images/wallpaper.jpg') center/cover no-repeat;
 }
+
 .container {
-    text-align: center;
-    padding: 20px;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  width: 90%;
+  max-width: 1200px;
+  background: var(--overlay-color);
+  backdrop-filter: blur(6px);
+  border-radius: 16px;
 }
+
 h1 {
-    color: #333;
-    font-size: 30px;
-    margin-bottom: 20px;
+  font-size: var(--fs-xl);
+  text-align: center;
+  text-shadow: 1px 1px 4px var(--shadow-dark);
 }
+
 .coffee-list {
-    display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    overflow-y: visible; /* Allow transformed elements to extend outside the container */
-    scroll-snap-type: x mandatory;
-    padding: 10px;
-    margin: 0 auto;
-    width: 100%;
-    height: 350px; /* Increase height to accommodate scaling */
-    scrollbar-width: none; /* Hide scrollbar for Firefox */
-    align-items: center; /* Center the list vertically */
-    position: relative; /* For positioning the swipe indicator */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-lg);
 }
-.coffee-list::-webkit-scrollbar {
-    display: none; /* Hide scrollbar for Chrome, Safari, and Edge */
+
+.coffee-item {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: var(--space-md);
+  box-shadow:
+    inset 4px 4px 8px var(--shadow-light),
+    4px 4px 8px var(--shadow-dark);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.coffee-list img {
-    scroll-snap-align: center;
-    width: 250px;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease;
+
+.coffee-item:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    inset 2px 2px 4px var(--shadow-light),
+    8px 8px 16px var(--shadow-dark);
 }
-.coffee-list img:hover {
-    transform: scale(1.1);
-    z-index: 1; /* Ensure the hovered image appears above others */
+
+.coffee-item img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: var(--space-sm);
 }
+
+.description {
+  font-size: var(--fs-lg);
+  font-weight: 500;
+  margin: var(--space-sm) 0;
+}
+
 .price {
-    font-size: 24px;
-    color: #333;
-    margin-top: 10px;
+  font-size: var(--fs-md);
+  font-weight: 700;
 }
+
 .swipe-indicator {
-    position: absolute;
-    bottom: 60px;
-    right: 20px;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 8px 55px;
-    border-radius: 20px;
-    pointer-events: none; /* Ensures it doesn't interfere with scrolling */
-    z-index: 2;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  position: fixed;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+  background: var(--card-bg);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 20px;
+  box-shadow: 2px 2px 6px var(--shadow-dark);
+  pointer-events: none;
 }
+
 .swipe-text {
-    font-size: 36px;
-    color: #333;
+  font-size: var(--fs-lg);
 }
+
 .finger-animation {
-    position: relative;
-    font-size: 36px;
-    animation: swipeLeft 2.5s infinite; /* Changed animation name */
-    transform-origin: center right; /* Changed origin point */
+  font-size: 1.5rem;
+  animation: swipeLeft 2.5s infinite;
+  transform-origin: center right;
 }
+
 @keyframes swipeLeft {
-    0% {
-        transform: translateX(40px); /* Changed direction */
-        opacity: 0;
-    }
-    20% {
-        opacity: 1;
-    }
-    80% {
-        opacity: 1;
-    }
-    100% {
-        transform: translateX(-20px); /* Changed direction */
-        opacity: 0;
-    }
+  0%   { transform: translateX(40px); opacity: 0; }
+  20%,80% { opacity: 1; }
+  100% { transform: translateX(-20px); opacity: 0; }
 }
-/* Add this to your HTML structure */
-/* 
-<div class="swipe-indicator">
-    <span class="swipe-text">Swipe left</span>
-    <span class="finger-animation">👈</span>
-</div>
-*/

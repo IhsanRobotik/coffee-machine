@@ -43,5 +43,15 @@
     "price": 270000,
     "description": "Macchiato",
     "imagePath": "../images/coffee-drinks_macchiato.webp"
+  },
+  "10": {
+    "price": 260000,
+    "description": "Long Black",
+    "imagePath": "../images/coffee-drinks_long-black.webp"
+  },
+  "11": {
+    "price": 280000,
+    "description": "Long Macchiato",
+    "imagePath": "../images/coffee-drinks_long-macchiato.webp"
   }
 }

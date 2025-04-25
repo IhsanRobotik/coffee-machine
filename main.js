@@ -1,11 +1,12 @@
+// ngrok ngrok http --url=relaxing-natural-eagle.ngrok-free.app 5000
 const { spawn } = require('child_process');
-const { app, BrowserWindow, ipcMain } = require('electron'); // Electron app
+const { app, BrowserWindow, ipcMain } = require('electron'); 
 const path = require('path');
 const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const express = require('express');
-const expressApp = express(); // Rename the express app variable
+const expressApp = express(); 
 
 let mainWindow;
 let transactionId = uuidv4();
@@ -21,6 +22,29 @@ const headers = {
   'Authorization': authorization
 };
 
+async function checkNgrokTunnels() {
+  try {
+    const response = await axios.get('http://127.0.0.1:4040/api/tunnels');
+    const tunnels = response.data.tunnels;
+    if (tunnels.length > 0) {
+      console.log('Active ngrok tunnels:');
+      for (const tunnel of tunnels) {
+        console.log(`Public URL: ${tunnel.public_url} -> Local Address: ${tunnel.config.addr}`);
+        if (tunnel.config.addr === 'http://localhost:5000' && tunnel.public_url === 'https://relaxing-natural-eagle.ngrok-free.app') {
+          return true; // Return true if tunnels are active
+        }
+      }
+      
+    } else {
+      console.log('No active ngrok tunnels found.');
+      return false; // Return false if no tunnels are active
+    }
+  } catch (error) {
+    console.error('Error fetching ngrok tunnels:', error.message);
+    return false; // Return false if an error occurs
+  }
+}
+
 const monitorpayment = async () => {
   expressApp.use(express.json()); // Use expressApp instead of app
 
@@ -33,16 +57,13 @@ const monitorpayment = async () => {
       return res.status(400).json({ message: 'hi' });
     }
 
-    // Check the transaction status
     if (req.body.transaction_status === 'settlement') {
-      // Load success.html in the main window
       mainWindow.loadFile('./html/success.html');
       setTimeout(() => {
         mainWindow.loadFile('./html/index.html');
       }, 2000);
 
     } else if (req.body.transaction_status === 'expire') {
-      // Load expired.html in the main window
       mainWindow.loadFile('./html/expired.html');
       setTimeout(() => {
         mainWindow.loadFile('./html/index.html');
@@ -59,8 +80,15 @@ const monitorpayment = async () => {
 };
 
 const createPayment = async (input) => {
+  // Check ngrok tunnels before proceeding
+  const ngrokActive = await checkNgrokTunnels();
+  if (!ngrokActive) {
+    console.error('Cannot create payment: No active ngrok tunnels.');
+    return; 
+  }
+
   // Generate a unique transaction ID using uuid
-  transactionId = uuidv4(); // Update the transactionId variable
+  transactionId = uuidv4();
   const payload = {
     "transaction_details": {
       "order_id": transactionId,
@@ -78,7 +106,6 @@ const createPayment = async (input) => {
 
   try {
     const response = await axios.post(baseUrl, payload, { headers });
-    // console.log('Payment created successfully:', response.data);
     const qris_url = response.data.actions[0].url;
     const description = product[input].description;
     const price = product[input].price;
@@ -148,8 +175,8 @@ function runPythonScript(scriptPath, args) {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1024,
-    height: 600,
+    width: 600,
+    height: 1024,
     // frame: false, // Makes the window frameless (hides title bar, minimize, maximize, and close buttons)
     webPreferences: {
       preload: path.join(__dirname, 'renderer.js'),
@@ -184,7 +211,7 @@ ipcMain.on('cancel-payment', () => {
   mainWindow.loadFile('./html/cancelled.html');
   setTimeout(() => {
     mainWindow.loadFile('./html/index.html');
-  }, 2000); // Show cancel.html for 2 seconds
+  }, 2000); 
 });
 
 ipcMain.on('exit-application', () => {
