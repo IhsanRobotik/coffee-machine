@@ -1,159 +1,127 @@
-// ngrok http --url=relaxing-natural-eagle.ngrok-free.app 5000
-const { spawn } = require('child_process');
-const { app, BrowserWindow, ipcMain } = require('electron'); 
+// Required modules
 const path = require('path');
 const axios = require('axios');
-const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const express = require('express');
+const { spawn } = require('child_process');
+const { app, BrowserWindow, ipcMain } = require('electron');
+const { v4: uuidv4 } = require('uuid');
 const { STATUS_CODES } = require('http');
-const expressApp = express(); 
 const sha512 = require('js-sha512').sha512;
 
-let mainWindow;
-let  order_id = uuidv4();
-
-const productFilePath = path.join(__dirname, 'products.json');
-let product = JSON.parse(fs.readFileSync(productFilePath, 'utf8'));
-
+// Environment variables
 require('dotenv').config();
 const authorization = process.env.MIDTRANS_API_AUTH;
 const Server_Key = process.env.MIDTRANS_SERVER_KEY;
 
+// Constants
+const productFilePath = path.join(__dirname, 'products.json');
+const baseUrl = 'https://api.sandbox.midtrans.com/v2/charge';
+
+// Global variables
+let mainWindow;
+let order_id;
+let product = JSON.parse(fs.readFileSync(productFilePath, 'utf8'));
+
+// Headers for API requests
 const headers = {
   'Content-Type': 'application/json',
-  'Authorization': authorization
+  'Authorization': authorization,
 };
 
+// Function to check active ngrok tunnels
 async function checkNgrokTunnels() {
   try {
     const response = await axios.get('http://127.0.0.1:4040/api/tunnels');
     const tunnels = response.data.tunnels;
+
     if (tunnels.length > 0) {
       console.log('Active ngrok tunnels:');
       for (const tunnel of tunnels) {
         console.log(`Public URL: ${tunnel.public_url} -> Local Address: ${tunnel.config.addr}`);
         if (tunnel.config.addr === 'http://localhost:5000' && tunnel.public_url === 'https://relaxing-natural-eagle.ngrok-free.app') {
-          return true; // Return true if tunnels are active
+          return true;
         }
       }
-      
     } else {
       console.log('No active ngrok tunnels found.');
-      return false; // Return false if no tunnels are active
     }
+    return false;
   } catch (error) {
     console.error('Error fetching ngrok tunnels:', error.message);
-    return false; // Return false if an error occurs
+    return false;
   }
 }
 
-const monitorpayment = async () => {
-  expressApp.use(express.json()); // Use expressApp instead of app
+// Function to monitor payment status
+const monitorPayment = async (input) => {
+  const expressApp = express();
+  expressApp.use(express.json());
 
   expressApp.post('/midtrans/callback', (req, res) => {
     console.log('Received:', req.body);
 
-
-    //change this to your actual infos
-    const hash = sha512(order_id + STATUS_CODES + product[input].price + Server_Key);
-
+    const hash = sha512(order_id + req.body.status_code + (product[input].price + '.00') + Server_Key);
+    console.log(order_id, "_________", req.body.status_code, "_________", product[input].price + '.00', "_________", Server_Key);
     console.log('SHA-512 Hash:', hash);
 
-    // Verify the order_id matches the current order_id
     if (hash === req.body.signature_key) {
-      console.error('Authorized callbacks.');
+      console.log('Authorized callbacks.');
+      if (req.body.transaction_status === 'settlement') {
+        mainWindow.loadFile('./html/success.html');
+        setTimeout(() => mainWindow.loadFile('./html/index.html'), 2000);
+      } else if (req.body.transaction_status === 'expire') {
+        mainWindow.loadFile('./html/expired.html');
+        setTimeout(() => mainWindow.loadFile('./html/index.html'), 2000);
+      } else if (req.body.transaction_status === 'cancel') {
+        mainWindow.loadFile('./html/cancelled.html');
+        setTimeout(() => mainWindow.loadFile('./html/index.html'), 2000);
+      } else {
+        console.log('Unhandled transaction status.');
+      }
     } else {
       console.error('Unauthorized callback.');
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    if (req.body.transaction_status === 'settlement') {
-      mainWindow.loadFile('./html/success.html');
-      setTimeout(() => {
-      mainWindow.loadFile('./html/index.html');
-      }, 2000);
-
-    } else if (req.body.transaction_status === 'expire') {
-      mainWindow.loadFile('./html/expired.html');
-      setTimeout(() => {
-      mainWindow.loadFile('./html/index.html');
-      }, 2000);
-
-    } else {
-      console.log('-------------------------------------------------------------');
-    }
-
-    res.json({ message: 'received' });
+    res.json({ message: 'Received' });
   });
 
-
-
-    // // Verify the order_id matches the current  order_id
-    // if (req.body.order_id !==  order_id) {
-    //   console.error('Order ID mismatch. Possible unauthorized callback.');
-    //   return res.status(400).json({ message: 'hi' });
-    // }
-
-    // if (req.body.transaction_status === 'settlement') {
-    //   mainWindow.loadFile('./html/success.html');
-    //   setTimeout(() => {
-    //     mainWindow.loadFile('./html/index.html');
-    //   }, 2000);
-
-    // } else if (req.body.transaction_status === 'expire') {
-    //   mainWindow.loadFile('./html/expired.html');
-    //   setTimeout(() => {
-    //     mainWindow.loadFile('./html/index.html');
-    //   }, 2000);
-
-    // } else {
-    //   console.log('-------------------------------------------------------------');
-    // }
-
-  //   res.json({ message: 'received' });
-  // });
-
-  expressApp.listen(5000, () => console.log('Server running on port 5000'));
+  expressApp.listen(5000, () => console.log('Express server listening on port 5000'));
 };
 
+// Function to create a payment
 const createPayment = async (input) => {
-  // Check ngrok tunnels before proceeding
   const ngrokActive = await checkNgrokTunnels();
   if (!ngrokActive) {
     console.error('Cannot create payment: No active ngrok tunnels.');
-    return; 
+    return;
   }
 
-  // Generate a unique transaction ID using uuid
   order_id = uuidv4();
   const payload = {
-    "transaction_details": {
-      "order_id":  order_id,
-      "gross_amount": product[input].price
+    transaction_details: {
+      order_id: order_id,
+      gross_amount: product[input].price,
     },
-    "custom_expiry": {
-      "expiry_duration": 5,
-      "unit": "minute"
+    custom_expiry: {
+      expiry_duration: 5,
+      unit: 'minute',
     },
-    "merchantId": "G536748043",
-    "payment_type": "qris"
+    merchantId: 'G536748043',
+    payment_type: 'qris',
   };
-
-  const baseUrl = 'https://api.sandbox.midtrans.com/v2/charge';
 
   try {
     const response = await axios.post(baseUrl, payload, { headers });
     const qris_url = response.data.actions[0].url;
     const description = product[input].description;
     const price = product[input].price;
-    console.log(qris_url);
 
-    // Load the qris_url, description, and price in the main window
+    console.log(qris_url);
     mainWindow.loadURL(`file://${__dirname}/html/qr.html?qris_url=${encodeURIComponent(qris_url)}&description=${encodeURIComponent(description)}&price=${encodeURIComponent(price)}`);
 
-    monitorpayment();
-    
+    monitorPayment(input);
   } catch (error) {
     if (error.response) {
       console.error('Error creating payment:', error.response.data);
@@ -166,19 +134,12 @@ const createPayment = async (input) => {
   }
 };
 
+// Function to cancel a payment
 const cancelPayment = async () => {
-  const url = `https://api.sandbox.midtrans.com/v2/$  order_id}/cancel`;
-  const options = {
-    method: 'POST',
-    headers: {
-      accept: 'application/json',
-      Authorization: authorization
-    }
-  };
+  const url = `https://api.sandbox.midtrans.com/v2/${order_id}/cancel`;
 
   try {
-    const response = await axios.post(url, {}, options);
-    // console.log('Payment cancelled successfully:', response.data);
+    const response = await axios.post(url, {}, { headers });
     return response.data;
   } catch (error) {
     console.error('Error cancelling payment:', error);
@@ -186,36 +147,30 @@ const cancelPayment = async () => {
   }
 };
 
-// Run a Python script and return output
+// Function to run a Python script
 function runPythonScript(scriptPath, args) {
+  const pyProg = spawn('python', [scriptPath, ...args]);
 
-  // Use child_process.spawn method from 
-  // child_process module and assign it to variable
-  const pyProg = spawn('python', [scriptPath].concat(args));
-
-  // Collect data from script and print to console
   let data = '';
   pyProg.stdout.on('data', (stdout) => {
     data += stdout.toString();
   });
 
-  // Print errors to console, if any
   pyProg.stderr.on('data', (stderr) => {
-    console.log(`stderr: ${stderr}`);
+    console.error(`stderr: ${stderr}`);
   });
 
-  // When script is finished, print collected data
   pyProg.on('close', (code) => {
-    console.log(`child process exited with code ${code}`);
+    console.log(`Child process exited with code ${code}`);
     console.log(data);
   });
 }
 
+// Function to create the main application window
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 600,
     height: 1024,
-    // frame: false, // Makes the window frameless (hides title bar, minimize, maximize, and close buttons)
     webPreferences: {
       preload: path.join(__dirname, 'renderer.js'),
     },
@@ -225,6 +180,7 @@ function createWindow() {
   mainWindow.loadFile('./html/index.html');
 }
 
+// Electron app lifecycle events
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
@@ -239,6 +195,7 @@ app.on('activate', () => {
   }
 });
 
+// IPC event handlers
 ipcMain.on('log-input', (event, input) => {
   console.log('Entered:', input);
   createPayment(input);
@@ -247,9 +204,7 @@ ipcMain.on('log-input', (event, input) => {
 ipcMain.on('cancel-payment', () => {
   cancelPayment();
   mainWindow.loadFile('./html/cancelled.html');
-  setTimeout(() => {
-    mainWindow.loadFile('./html/index.html');
-  }, 2000); 
+  setTimeout(() => mainWindow.loadFile('./html/index.html'), 2000);
 });
 
 ipcMain.on('exit-application', () => {
