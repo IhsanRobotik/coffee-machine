@@ -1,4 +1,4 @@
-// ngrok ngrok http --url=relaxing-natural-eagle.ngrok-free.app 5000
+// ngrok http --url=relaxing-natural-eagle.ngrok-free.app 5000
 const { spawn } = require('child_process');
 const { app, BrowserWindow, ipcMain } = require('electron'); 
 const path = require('path');
@@ -6,16 +6,19 @@ const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const express = require('express');
+const { STATUS_CODES } = require('http');
 const expressApp = express(); 
+const sha512 = require('js-sha512').sha512;
 
 let mainWindow;
-let transactionId = uuidv4();
+let  order_id = uuidv4();
 
 const productFilePath = path.join(__dirname, 'products.json');
 let product = JSON.parse(fs.readFileSync(productFilePath, 'utf8'));
 
 require('dotenv').config();
 const authorization = process.env.MIDTRANS_API_AUTH;
+const Server_Key = process.env.MIDTRANS_SERVER_KEY;
 
 const headers = {
   'Content-Type': 'application/json',
@@ -51,22 +54,30 @@ const monitorpayment = async () => {
   expressApp.post('/midtrans/callback', (req, res) => {
     console.log('Received:', req.body);
 
-    // Verify the order_id matches the current transactionId
-    if (req.body.order_id !== transactionId) {
-      console.error('Order ID mismatch. Possible unauthorized callback.');
-      return res.status(400).json({ message: 'hi' });
+
+    //change this to your actual infos
+    const hash = sha512(order_id + STATUS_CODES + product[input].price + Server_Key);
+
+    console.log('SHA-512 Hash:', hash);
+
+    // Verify the order_id matches the current order_id
+    if (hash === req.body.signature_key) {
+      console.error('Authorized callbacks.');
+    } else {
+      console.error('Unauthorized callback.');
+      return res.status(401).json({ message: 'Unauthorized' });
     }
 
     if (req.body.transaction_status === 'settlement') {
       mainWindow.loadFile('./html/success.html');
       setTimeout(() => {
-        mainWindow.loadFile('./html/index.html');
+      mainWindow.loadFile('./html/index.html');
       }, 2000);
 
     } else if (req.body.transaction_status === 'expire') {
       mainWindow.loadFile('./html/expired.html');
       setTimeout(() => {
-        mainWindow.loadFile('./html/index.html');
+      mainWindow.loadFile('./html/index.html');
       }, 2000);
 
     } else {
@@ -75,6 +86,33 @@ const monitorpayment = async () => {
 
     res.json({ message: 'received' });
   });
+
+
+
+    // // Verify the order_id matches the current  order_id
+    // if (req.body.order_id !==  order_id) {
+    //   console.error('Order ID mismatch. Possible unauthorized callback.');
+    //   return res.status(400).json({ message: 'hi' });
+    // }
+
+    // if (req.body.transaction_status === 'settlement') {
+    //   mainWindow.loadFile('./html/success.html');
+    //   setTimeout(() => {
+    //     mainWindow.loadFile('./html/index.html');
+    //   }, 2000);
+
+    // } else if (req.body.transaction_status === 'expire') {
+    //   mainWindow.loadFile('./html/expired.html');
+    //   setTimeout(() => {
+    //     mainWindow.loadFile('./html/index.html');
+    //   }, 2000);
+
+    // } else {
+    //   console.log('-------------------------------------------------------------');
+    // }
+
+  //   res.json({ message: 'received' });
+  // });
 
   expressApp.listen(5000, () => console.log('Server running on port 5000'));
 };
@@ -88,10 +126,10 @@ const createPayment = async (input) => {
   }
 
   // Generate a unique transaction ID using uuid
-  transactionId = uuidv4();
+  order_id = uuidv4();
   const payload = {
     "transaction_details": {
-      "order_id": transactionId,
+      "order_id":  order_id,
       "gross_amount": product[input].price
     },
     "custom_expiry": {
@@ -129,7 +167,7 @@ const createPayment = async (input) => {
 };
 
 const cancelPayment = async () => {
-  const url = `https://api.sandbox.midtrans.com/v2/${transactionId}/cancel`;
+  const url = `https://api.sandbox.midtrans.com/v2/$  order_id}/cancel`;
   const options = {
     method: 'POST',
     headers: {
