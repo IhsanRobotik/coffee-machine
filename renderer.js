@@ -1,5 +1,23 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
+let startY = null;
+const threshold = 20; // minimum px to trigger scroll
+
+window.addEventListener('pointerdown', e => {
+  startY = e.clientY;
+});
+
+window.addEventListener('pointerup', e => {
+  if (startY === null) return;
+  const deltaY = e.clientY - startY;
+  if (Math.abs(deltaY) > threshold) {
+    // invert delta to match natural scroll
+    window.scrollBy({ top: -deltaY, behavior: 'smooth' });
+  }
+  startY = null;
+});
+
+
 contextBridge.exposeInMainWorld('electronAPI', {
     logInput: (input) => ipcRenderer.send('log-input', input),
     processPayment: (input) => ipcRenderer.send('process-payment', input),

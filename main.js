@@ -202,7 +202,7 @@ ipcMain.on('log-input', (event, input) => {
   console.log('Entered:', input);
   createPayment(input);
 });
-a
+
 ipcMain.on('cancel-payment', () => {
   cancelPayment();
   mainWindow.loadFile('./html/cancelled.html');
