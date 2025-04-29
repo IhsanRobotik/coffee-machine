@@ -9,7 +9,7 @@ const express = require('express');
 const expressApp = express(); 
 
 let mainWindow;
-let transactionId = uuidv4();
+let transactionId;
 
 const productFilePath = path.join(__dirname, 'products.json');
 let product = JSON.parse(fs.readFileSync(productFilePath, 'utf8'));
@@ -86,8 +86,6 @@ const createPayment = async (input) => {
     console.error('Cannot create payment: No active ngrok tunnels.');
     return; 
   }
-
-  // Generate a unique transaction ID using uuid
   transactionId = uuidv4();
   const payload = {
     "transaction_details": {
@@ -113,8 +111,6 @@ const createPayment = async (input) => {
 
     // Load the qris_url, description, and price in the main window
     mainWindow.loadURL(`file://${__dirname}/html/qr.html?qris_url=${encodeURIComponent(qris_url)}&description=${encodeURIComponent(description)}&price=${encodeURIComponent(price)}`);
-
-    monitorpayment();
     
   } catch (error) {
     if (error.response) {
@@ -187,7 +183,10 @@ function createWindow() {
   mainWindow.loadFile('./html/index.html');
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+  monitorpayment();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
