@@ -7,15 +7,18 @@ const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const express = require('express');
 const expressApp = express(); 
+const SHA512 = require('js-sha512');
 
 let mainWindow;
 let transactionId;
+let price; // Global variable for price
 
 const productFilePath = path.join(__dirname, 'products.json');
 let product = JSON.parse(fs.readFileSync(productFilePath, 'utf8'));
 
 require('dotenv').config();
 const authorization = process.env.MIDTRANS_API_AUTH;
+const ServerKey = process.env.MIDTRANS_SERVER_KEY;
 
 const headers = {
   'Content-Type': 'application/json',
@@ -31,28 +34,30 @@ async function checkNgrokTunnels() {
       for (const tunnel of tunnels) {
         console.log(`Public URL: ${tunnel.public_url} -> Local Address: ${tunnel.config.addr}`);
         if (tunnel.config.addr === 'http://localhost:5000' && tunnel.public_url === 'https://relaxing-natural-eagle.ngrok-free.app') {
-          return true; // Return true if tunnels are active
+          return true; 
         }
       }
-      
     } else {
       console.log('No active ngrok tunnels found.');
-      return false; // Return false if no tunnels are active
+      return false; 
     }
   } catch (error) {
     console.error('Error fetching ngrok tunnels:', error.message);
-    return false; // Return false if an error occurs
+    return false; 
   }
 }
 
 const monitorpayment = async () => {
-  expressApp.use(express.json()); // Use expressApp instead of app
+  expressApp.use(express.json()); 
 
   expressApp.post('/midtrans/callback', (req, res) => {
     console.log('Received:', req.body);
 
     // Verify the order_id matches the current transactionId
-    if (req.body.order_id !== transactionId) {
+    const hash = SHA512(transactionId + req.body.status_code + price + '.00' + ServerKey);
+    console.log(transactionId, '-----', req.body.status_code, '-----', price + '.00', '-----', ServerKey, hash);
+
+    if (hash !== req.body.signature_key) {
       console.error('Order ID mismatch. Possible unauthorized callback.');
       return res.status(400).json({ message: 'hi' });
     }
@@ -87,10 +92,11 @@ const createPayment = async (input) => {
     return; 
   }
   transactionId = uuidv4();
+  price = product[input].price; // Assign price to the global variable
   const payload = {
     "transaction_details": {
       "order_id": transactionId,
-      "gross_amount": product[input].price
+      "gross_amount": price
     },
     "custom_expiry": {
       "expiry_duration": 5,
@@ -106,7 +112,6 @@ const createPayment = async (input) => {
     const response = await axios.post(baseUrl, payload, { headers });
     const qris_url = response.data.actions[0].url;
     const description = product[input].description;
-    const price = product[input].price;
     console.log(qris_url);
 
     // Load the qris_url, description, and price in the main window
@@ -136,7 +141,6 @@ const cancelPayment = async () => {
 
   try {
     const response = await axios.post(url, {}, options);
-    // console.log('Payment cancelled successfully:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error cancelling payment:', error);
@@ -146,23 +150,17 @@ const cancelPayment = async () => {
 
 // Run a Python script and return output
 function runPythonScript(scriptPath, args) {
-
-  // Use child_process.spawn method from 
-  // child_process module and assign it to variable
   const pyProg = spawn('python', [scriptPath].concat(args));
 
-  // Collect data from script and print to console
   let data = '';
   pyProg.stdout.on('data', (stdout) => {
     data += stdout.toString();
   });
 
-  // Print errors to console, if any
   pyProg.stderr.on('data', (stderr) => {
     console.log(`stderr: ${stderr}`);
   });
 
-  // When script is finished, print collected data
   pyProg.on('close', (code) => {
     console.log(`child process exited with code ${code}`);
     console.log(data);
@@ -173,7 +171,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 600,
     height: 1024,
-    // frame: false, // Makes the window frameless (hides title bar, minimize, maximize, and close buttons)
+    frame: false,
     webPreferences: {
       preload: path.join(__dirname, 'renderer.js'),
     },
@@ -204,7 +202,7 @@ ipcMain.on('log-input', (event, input) => {
   console.log('Entered:', input);
   createPayment(input);
 });
-
+a
 ipcMain.on('cancel-payment', () => {
   cancelPayment();
   mainWindow.loadFile('./html/cancelled.html');
