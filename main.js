@@ -1,3 +1,4 @@
+// buat fitur pre order jarak jauh 
 // ngrok ngrok http --url=relaxing-natural-eagle.ngrok-free.app 5000
 const { spawn } = require('child_process');
 const { app, BrowserWindow, ipcMain } = require('electron'); 
