@@ -6959,26 +6959,6 @@
 	)
 	(wire
 		(pts
-			(xy 196.85 76.2) (xy 208.28 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e895f0f5-f1b9-491e-b207-f3bf31e785a7")
-	)
-	(wire
-		(pts
-			(xy 196.85 73.66) (xy 208.28 73.66)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e9772c2a-a717-4c2f-b0c6-63fac638b543")
-	)
-	(wire
-		(pts
 			(xy 123.19 38.1) (xy 123.19 29.21)
 		)
 		(stroke
@@ -7563,28 +7543,6 @@
 		(uuid "fe8afe5a-6b46-4fa6-a468-a89d0a532046")
 	)
 	(label "COFFEE"
-		(at 196.85 73.66 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "0c30ff0f-2fec-4c97-b47a-e8df1c4a1653")
-	)
-	(label "SUGAR"
-		(at 196.85 76.2 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "24c67016-7cda-4b8b-80ea-d5b8c68b1aa2")
-	)
-	(label "COFFEE"
 		(at 40.64 76.2 0)
 		(fields_autoplaced yes)
 		(effects
@@ -7872,7 +7830,7 @@
 	)
 	(global_label "GPIO19"
 		(shape input)
-		(at 181.61 73.66 180)
+		(at 208.28 73.66 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -7882,7 +7840,7 @@
 		)
 		(uuid "3a4b7bf7-b925-49c3-a443-47ffc81f1024")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 171.7305 73.66 0)
+			(at 198.4005 73.66 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8598,7 +8556,7 @@
 	)
 	(global_label "GPIO26"
 		(shape input)
-		(at 181.61 76.2 180)
+		(at 208.28 76.2 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -8608,7 +8566,7 @@
 		)
 		(uuid "db7085d2-5299-46fb-b7da-df888a9a2ff7")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 171.7305 76.2 0)
+			(at 198.4005 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)

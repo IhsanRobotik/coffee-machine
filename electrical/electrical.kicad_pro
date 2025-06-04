@@ -48,7 +48,7 @@
         "silk_text_thickness": 0.1,
         "silk_text_upright": false,
         "zones": {
-          "min_clearance": 0.5
+          "min_clearance": 1.27
         }
       },
       "diff_pair_dimensions": [
@@ -704,11 +704,11 @@
     ],
     [
       "1c207055-f9f2-4660-8a59-36c54655603a",
-      "Untitled Sheet2"
+      "IR 2"
     ],
     [
       "594a7cc3-fb11-4210-921c-fb45b03353b1",
-      "Untitled Sheet1"
+      "IR 1"
     ]
   ],
   "text_variables": {}

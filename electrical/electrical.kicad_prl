@@ -6,8 +6,13 @@
     "hidden_netclasses": [],
     "hidden_nets": [
       "GND",
+      "+5V",
       "+3.3V",
-      "GND +12V"
+      "GPIO27",
+      "GPIO17",
+      "AC",
+      "GND +12V",
+      "BLACK E-"
     ],
     "high_contrast_mode": 0,
     "net_color_mode": 1,
@@ -69,7 +74,7 @@
       40
     ],
     "visible_layers": "ffcffff_ffffffff",
-    "zone_display_mode": 1
+    "zone_display_mode": 0
   },
   "git": {
     "repo_password": "",

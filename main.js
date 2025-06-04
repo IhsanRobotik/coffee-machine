@@ -130,6 +130,15 @@ const createPayment = async (input) => {
   }
 };
 
+const createAdjustPreference = async (input) => {
+  // sweetness
+
+
+  // make display system status “Heating,” “Grinding,” “Brewing,” “Cleaning.”
+
+  // h
+}
+
 const cancelPayment = async () => {
   const url = `https://api.sandbox.midtrans.com/v2/${transactionId}/cancel`;
   const options = {
