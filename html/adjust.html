@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coffee Customizer</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f8f4f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 500px;
+    }
+
+    .slider-group {
+      margin-bottom: 20px;
+    }
+
+    .label {
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    .slider-control {
+      display: flex;
+      align-items: center;
+    }
+
+    .slider-control button {
+      background-color: transparent;
+      border: none;
+      padding: 0;
+      margin: 0 5px;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    /* All lower buttons use the same image */
+    .lower-btn {
+      background-image: url('lower.png'); /* Single image for all minus buttons */
+    }
+
+    /* All higher buttons use the same image */
+    .higher-btn {
+      background-image: url('higher.png'); /* Single image for all plus buttons */
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 12px;
+      background: #ddd;
+      border-radius: 5px;
+      margin: 0 10px;
+      outline: none;
+      background-image: linear-gradient(to right, #a0522d 0%, #a0522d 50%, #ddd 50%, #ddd 100%);
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+    }
+
+    /* Sweetness slider thumb */
+    #sweetness::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 28px;
+      width: 28px;
+      border: none;
+      border-radius: 50%;
+      background: url('../images/sugar.png') no-repeat center;
+      background-size: contain;
+      cursor: pointer;
+      margin-top: -8px;
+    }
+
+    #sweetness::-moz-range-thumb {
+      height: 28px;
+      width: 28px;
+      border: none;
+      border-radius: 50%;
+      background: url('../images/sugar.png') no-repeat center;
+      background-size: contain;
+      cursor: pointer;
+    }
+
+    /* Coffee Strength slider thumb */
+    #strength::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 28px;
+      width: 28px;
+      border: none;
+      border-radius: 50%;
+      background: url('../images/coffee-beans.png') no-repeat center;
+      background-size: contain;
+      cursor: pointer;
+      margin-top: -8px;
+    }
+
+    #strength::-moz-range-thumb {
+      height: 28px;
+      width: 28px;
+      border: none;
+      border-radius: 50%;
+      background: url('../images/coffee-beans.png') no-repeat center;
+      background-size: contain;
+      cursor: pointer;
+    }
+
+    /* Creamer slider thumb */
+    #creamer::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 28px;
+      width: 28px;
+      border: none;
+      border-radius: 50%;
+      background: url('creamer-thumb.png') no-repeat center;
+      background-size: contain;
+      cursor: pointer;
+      margin-top: -8px;
+    }
+
+    #creamer::-moz-range-thumb {
+      height: 28px;
+      width: 28px;
+      border: none;
+      border-radius: 50%;
+      background: url('creamer-thumb.png') no-repeat center;
+      background-size: contain;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 12px;
+      background: #ddd;
+      border-radius: 5px;
+      border: none;
+    }
+
+    .submit-btn,
+    .default-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .submit-btn {
+      background-color: #6f4e37;
+    }
+
+    .submit-btn:hover {
+      background-color: #593927;
+    }
+
+    .default-btn {
+      background-color: #a0522d;
+    }
+
+    .default-btn:hover {
+      background-color: #80411e;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="slider-group">
+      <div class="label">Sweetness</div>
+      <div class="slider-control">
+        <button class="lower-btn" onclick="adjustSlider('sweetness', -1)"></button>
+        <input type="range" id="sweetness" min="0" max="10" value="5" />
+        <button class="higher-btn" onclick="adjustSlider('sweetness', 1)"></button>
+      </div>
+    </div>
+
+    <div class="slider-group">
+      <div class="label">Coffee Strength</div>
+      <div class="slider-control">
+        <button class="lower-btn" onclick="adjustSlider('strength', -1)"></button>
+        <input type="range" id="strength" min="0" max="10" value="5" />
+        <button class="higher-btn" onclick="adjustSlider('strength', 1)"></button>
+      </div>
+    </div>
+
+    <div class="slider-group">
+      <div class="label">Creamer</div>
+      <div class="slider-control">
+        <button class="lower-btn" onclick="adjustSlider('creamer', -1)"></button>
+        <input type="range" id="creamer" min="0" max="10" value="5" />
+        <button class="higher-btn" onclick="adjustSlider('creamer', 1)"></button>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn">Submit</button>
+    <button class="default-btn" onclick="resetSliders()">Default</button>
+  </div>
+
+  <script>
+    function updateSliderBackground(slider) {
+      const value = slider.value;
+      const min = slider.min || 0;
+      const max = slider.max || 100;
+      const percentage = ((value - min) / (max - min)) * 100;
+      
+      slider.style.backgroundImage = `linear-gradient(to right, #a0522d 0%, #a0522d ${percentage}%, #ddd ${percentage}%, #ddd 100%)`;
+    }
+
+    function adjustSlider(id, delta) {
+      const slider = document.getElementById(id);
+      const newValue = parseInt(slider.value) + delta;
+      if (newValue >= slider.min && newValue <= slider.max) {
+        slider.value = newValue;
+        updateSliderBackground(slider);
+      }
+    }
+
+    function resetSliders() {
+      const sliders = ['sweetness', 'strength', 'creamer'];
+      sliders.forEach(id => {
+        const slider = document.getElementById(id);
+        slider.value = 0;
+        updateSliderBackground(slider);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const sliders = document.querySelectorAll('input[type="range"]');
+    sliders.forEach(slider => {
+      updateSliderBackground(slider);
+      slider.addEventListener('input', function() {
+        updateSliderBackground(this);
+      });
+    });
+
+    // Add this block to get slider values on submit
+    document.getElementById('submitBtn').addEventListener('click', function() {
+      const values = {
+        sweetness: document.getElementById('sweetness').value,
+        strength: document.getElementById('strength').value,
+        creamer: document.getElementById('creamer').value
+      };
+      window.electronAPI.send('adjust-preference', values);
+    });
+  });
+  </script>
+</body>
+</html>

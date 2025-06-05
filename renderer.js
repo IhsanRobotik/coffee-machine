@@ -25,5 +25,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     modifyProduct: (id, description, price) => ipcRenderer.send('modify-product', { id, description, price }),
     exitApplication: () => ipcRenderer.send('exit-application'),
     onModificationSuccess: (callback) => ipcRenderer.on('modification-success', callback),
-    onModificationFailure: (callback) => ipcRenderer.on('modification-failure', callback)
-});
+    onModificationFailure: (callback) => ipcRenderer.on('modification-failure', callback),
+    send: (channel, data) => ipcRenderer.send(channel, data)
+  });
