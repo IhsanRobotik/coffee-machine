@@ -1,6 +1,6 @@
 {
   "board": {
-    "active_layer": 0,
+    "active_layer": 31,
     "active_layer_preset": "",
     "auto_track_width": true,
     "hidden_netclasses": [],
@@ -8,8 +8,6 @@
       "GND",
       "+5V",
       "+3.3V",
-      "GPIO27",
-      "GPIO17",
       "AC",
       "GND +12V",
       "BLACK E-"

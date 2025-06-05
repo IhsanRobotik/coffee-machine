@@ -1,20 +1,23 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 let startY = null;
-const threshold = 20; // minimum px to trigger scroll
+let lastY = null;
 
 window.addEventListener('pointerdown', e => {
   startY = e.clientY;
+  lastY = e.clientY;
 });
 
-window.addEventListener('pointerup', e => {
+window.addEventListener('pointermove', e => {
   if (startY === null) return;
-  const deltaY = e.clientY - startY;
-  if (Math.abs(deltaY) > threshold) {
-    // invert delta to match natural scroll
-    window.scrollBy({ top: -deltaY, behavior: 'smooth' });
-  }
+  const deltaY = e.clientY - lastY;
+  window.scrollBy({ top: -deltaY });
+  lastY = e.clientY;
+});
+
+window.addEventListener('pointerup', () => {
   startY = null;
+  lastY = null;
 });
 
 
