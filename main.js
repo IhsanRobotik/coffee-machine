@@ -13,6 +13,7 @@ const SHA512 = require('js-sha512');
 let mainWindow;
 let transactionId;
 let price; // Global variable for price
+let lastInput
 
 const productFilePath = path.join(__dirname, 'products.json');
 let product = JSON.parse(fs.readFileSync(productFilePath, 'utf8'));
@@ -210,6 +211,7 @@ app.on('activate', () => {
 
 ipcMain.on('log-input', (event, input) => {
   console.log('Entered:', input);
+  lastInput = input
   mainWindow.loadFile('./html/adjust2.html');
 });
 
@@ -227,5 +229,12 @@ ipcMain.on('exit-application', () => {
 
 ipcMain.on('adjust-preference', (event, values) => {
   console.log('Received preferences:', values);
+  const creamer = Number(values.creamer);
+  if (typeof lastInput !== 'undefined') {
+    const result = lastInput * creamer;
+    console.log('lastInput * creamer =', result);
+  } else {
+    console.log('No lastInput value available.');
+  }
 });
 
