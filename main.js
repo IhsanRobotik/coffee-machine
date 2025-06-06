@@ -183,6 +183,9 @@ function createWindow() {
     width: 600,
     height: 1024,
     frame: false,
+    resizable: false,
+    fullscreen: true,
+    kiosk: true,
     webPreferences: {
       preload: path.join(__dirname, 'renderer.js'),
     },

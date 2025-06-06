@@ -3,17 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vending</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <title>Coffee Products</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        img {
+            user-drag: none;
+            -webkit-user-drag: none;
+            pointer-events: auto;
+        }
+
+        * {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        :root {
+            --bg-color: #f5f5f5;
+            --overlay-color: rgba(255,255,255,0.6);
+            --text-color: #333;
+            --card-bg: #fff;
+            --shadow-light: rgba(255,255,255,0.8);
+            --shadow-dark: rgba(0,0,0,0.1);
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --font-base: 'Roboto', sans-serif;
+            --fs-xl: clamp(1.5rem, 5vw, 2.5rem);
+            --fs-lg: clamp(1.25rem, 4vw, 2rem);
+            --fs-md: 1rem;
+            --line-height: 1.6;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            cursor: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--font-base);
+            font-size: var(--fs-md);
+            line-height: var(--line-height);
+            color: var(--text-color);
+            background: var(--bg-color) url('../images/wallpaper.jpg') center/cover no-repeat;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 10px;
+            padding: 10px;
+            width: 100%;
+            max-width: 1200px;
+            background: var(--overlay-color);
+            backdrop-filter: blur(6px);
+        }
+
+        h1 {
+            font-size: var(--fs-xl);
+            text-align: center;
+            text-shadow: 1px 1px 4px var(--shadow-dark);
+        }
+
+        .coffee-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .coffee-item {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: var(--space-md);
+            box-shadow:
+                inset 4px 4px 8px var(--shadow-light),
+                4px 4px 8px var(--shadow-dark);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .coffee-item:hover {
+            transform: translateY(-4px);
+            box-shadow:
+                inset 2px 2px 4px var(--shadow-light),
+                8px 8px 16px var(--shadow-dark);
+        }
+
+        .coffee-item img {
+            width: 100%;
+            height: 193px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 2px;
+        }
+
+        .description {
+            font-size: var(--fs-lg);
+            font-weight: 500;
+            margin: 0 0 2px 0;
+        }
+
+        .price {
+            font-size: var(--fs-md);
+            font-weight: 700;
+        }
+
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: var(--space-lg);
+        }
+
+        .nav-button {
+            background: var(--card-bg);
+            border: none;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: 20px;
+            box-shadow: 2px 2px 6px var(--shadow-dark);
+            font-size: 50px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Choose your product</h1>
-        <div class="coffee-list" id="coffeeList">
-            <!-- Coffee items will be dynamically populated -->
+        <div id="coffeeList" class="coffee-list"></div>
+        
+        <div class="pagination-controls">
+            <button id="prevBtn" class="nav-button">
+            <img src="../images/left-arrow.png" alt="Left Arrow" width="36" height="36">
+            Back
+            </button>
+            <button id="nextBtn" class="nav-button">
+            Next
+            <img src="../images/right-arrow.png" alt="Right Arrow" width="36" height="36">
+            </button>
         </div>
     </div>
 
-    <script src="../script.js"></script>
+    <script>
+        let allCoffeeData = {};
+        let currentPage = 1;
+        const itemsPerPage = 6;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const coffeeList = document.getElementById('coffeeList');
+            
+            fetch('../products.json')
+                .then(response => response.json())
+                .then(data => {
+                    allCoffeeData = data;
+                    renderCurrentPage();
+                    updatePaginationButtons();
+                })
+                .catch(error => {
+                    console.error('Error fetching coffee data:', error);
+                });
+
+            document.getElementById('prevBtn').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderCurrentPage();
+                    updatePaginationButtons();
+                }
+            });
+
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                const totalPages = Math.ceil(Object.keys(allCoffeeData).length / itemsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderCurrentPage();
+                    updatePaginationButtons();
+                }
+            });
+        });
+
+        function renderCurrentPage() {
+            const coffeeList = document.getElementById('coffeeList');
+            coffeeList.innerHTML = '';
+            
+            const allKeys = Object.keys(allCoffeeData);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const keysForCurrentPage = allKeys.slice(startIndex, endIndex);
+
+            keysForCurrentPage.forEach(key => {
+                const coffee = allCoffeeData[key];
+                const coffeeItem = document.createElement('div');
+                coffeeItem.classList.add('coffee-item');
+                
+                const coffeeImage = document.createElement('img');
+                coffeeImage.src = coffee.imagePath;
+                coffeeImage.dataset.index = key;
+                coffeeImage.alt = coffee.description;
+                
+                let downY = null;
+                let isDragging = false;
+                
+                coffeeImage.addEventListener('pointerdown', e => {
+                    downY = e.clientY;
+                    isDragging = false;
+                });
+                
+                coffeeImage.addEventListener('pointermove', e => {
+                    if (downY === null) return;
+                    if (Math.abs(e.clientY - downY) > 5) {
+                        isDragging = true;
+                    }
+                });
+                
+                coffeeImage.addEventListener('pointerup', e => {
+                    if (downY === null) return;
+                    if (!isDragging) {
+                        window.electronAPI.logInput(`${key}`);
+                    }
+                    downY = null;
+                });
+                
+                const coffeeDescription = document.createElement('p');
+                coffeeDescription.classList.add('description');
+                coffeeDescription.textContent = coffee.description;
+                
+                const coffeePrice = document.createElement('p');
+                coffeePrice.classList.add('price');
+                coffeePrice.textContent = `Rp. ${coffee.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+                
+                coffeeItem.appendChild(coffeeImage);
+                coffeeItem.appendChild(coffeeDescription);
+                coffeeItem.appendChild(coffeePrice);
+                coffeeList.appendChild(coffeeItem);
+            });
+        }
+
+        function updatePaginationButtons() {
+            const totalPages = Math.ceil(Object.keys(allCoffeeData).length / itemsPerPage);
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
+    </script>
 </body>
 </html>

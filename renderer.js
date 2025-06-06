@@ -1,26 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-let startY = null;
-let lastY = null;
-
-window.addEventListener('pointerdown', e => {
-  startY = e.clientY;
-  lastY = e.clientY;
-});
-
-window.addEventListener('pointermove', e => {
-  if (startY === null) return;
-  const deltaY = e.clientY - lastY;
-  window.scrollBy({ top: -deltaY });
-  lastY = e.clientY;
-});
-
-window.addEventListener('pointerup', () => {
-  startY = null;
-  lastY = null;
-});
-
-
 contextBridge.exposeInMainWorld('electronAPI', {
     logInput: (input) => ipcRenderer.send('log-input', input),
     processPayment: (input) => ipcRenderer.send('process-payment', input),

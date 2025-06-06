@@ -1,20 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const coffeeList = document.getElementById('coffeeList');
+    let startY = null;
+    let lastY = null;
 
-    // Listen for clicks on coffee images
-    coffeeList.addEventListener('click', (event) => {
-        if (event.target.tagName === 'IMG') {
-            const coffeeIndex = event.target.dataset.index;
-            console.log(`Selected coffee index: ${coffeeIndex}`);
-            window.electronAPI.logInput(`${coffeeIndex}`);
-        }
+    window.addEventListener('pointerdown', e => {
+        startY = e.clientY;
+        lastY = e.clientY;
     });
 
-    // Fetch JSON data and render the coffee items
+    window.addEventListener('pointermove', e => {
+        if (startY === null) return;
+        const deltaY = e.clientY - lastY;
+        window.scrollBy({ top: -deltaY });
+        lastY = e.clientY;
+    });
+
+    window.addEventListener('pointerup', () => {
+        startY = null;
+        lastY = null;
+    });
+
+    const coffeeList = document.getElementById('coffeeList');
     fetch('../products.json')
-        .then((response) => response.json())
-        .then((data) => {
-            Object.keys(data).forEach((key) => {
+        .then(response => response.json())
+        .then(data => {
+            Object.keys(data).forEach(key => {
                 const coffee = data[key];
                 const coffeeItem = document.createElement('div');
                 coffeeItem.classList.add('coffee-item');
@@ -23,6 +32,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 coffeeImage.src = coffee.imagePath;
                 coffeeImage.dataset.index = key;
                 coffeeImage.alt = coffee.description;
+
+                let downY = null;
+                let isDragging = false;
+
+                coffeeImage.addEventListener('pointerdown', e => {
+                    downY = e.clientY;
+                    isDragging = false;
+                });
+
+                coffeeImage.addEventListener('pointermove', e => {
+                    if (downY === null) return;
+                    if (Math.abs(e.clientY - downY) > 5) {
+                        isDragging = true;
+                    }
+                });
+
+                coffeeImage.addEventListener('pointerup', e => {
+                    if (downY === null) return;
+                    if (!isDragging) {
+                        window.electronAPI.logInput(`${key}`);
+                    }
+                    downY = null;
+                });
 
                 const coffeeDescription = document.createElement('p');
                 coffeeDescription.classList.add('description');
@@ -33,12 +65,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 coffeePrice.textContent = `Rp. ${coffee.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
 
                 coffeeItem.appendChild(coffeeImage);
-                coffeeItem.appendChild(coffeeDescription); // Append description
+                coffeeItem.appendChild(coffeeDescription);
                 coffeeItem.appendChild(coffeePrice);
                 coffeeList.appendChild(coffeeItem);
             });
         })
-        .catch((error) => {
+        .catch(error => {
             console.error('Error fetching coffee data:', error);
         });
 });

@@ -4,15 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coffee Machine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        * {
+        :root {
+            --bg-color: #f5f5f5;
+            --overlay-color: rgba(255,255,255,0.6);
+            --text-color: #333;
+            --card-bg: #fff;
+            --shadow-light: rgba(255,255,255,0.8);
+            --shadow-dark: rgba(0,0,0,0.1);
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --font-base: 'Roboto', sans-serif;
+            --fs-xl: clamp(1.7rem, 5.5vw, 2.8rem);
+            --fs-lg: clamp(1.4rem, 4.5vw, 2.2rem);
+            --fs-md: 1.1rem;
+            --line-height: 1.6;
+        }
+
+        *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        img {
+            user-drag: none;
+            -webkit-user-drag: none;
+            pointer-events: auto;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollable {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--font-base);
             background: linear-gradient(135deg, #2c1810 0%, #8b4513 100%);
             height: 100vh;
             margin: 0;
@@ -21,6 +57,10 @@
             -webkit-user-select: none;
             touch-action: manipulation;
             overflow: hidden;
+            cursor: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .machine-container {
@@ -50,7 +90,7 @@
         }
 
         .title {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             color: #2c1810;
             font-weight: 700;
             margin-bottom: 1vh;
@@ -58,7 +98,7 @@
 
         .subtitle {
             color: #666;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
         }
 
         .controls-wrapper {
@@ -74,7 +114,7 @@
         }
 
         .control-label {
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: 600;
             color: #2c1810;
             margin-bottom: 1vh;
@@ -84,7 +124,9 @@
         }
 
         .icon {
-            font-size: 1.5rem;
+            width: 28px;
+            height: 28px;
+            display: inline-block;
         }
 
         .slider-container {
@@ -135,14 +177,14 @@
             display: flex;
             justify-content: space-between;
             margin-top: 8px;
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: #666;
         }
 
         .value-display {
             text-align: center;
             margin-top: 1vh;
-            font-size: 1.1rem;
+            font-size: 1.3rem;
             font-weight: 600;
             color: #8b4513;
             background: rgba(139, 69, 19, 0.1);
@@ -159,10 +201,6 @@
             background: linear-gradient(to right, #f4e4bc 0%, #8b4513 50%, #2c1810 100%);
         }
 
-        .creamer-slider {
-            background: linear-gradient(to right, #2c1810 0%, #d2b48c 50%, #fff 100%);
-        }
-
         .brew-section {
             flex-shrink: 0;
             margin-top: 2vh;
@@ -177,7 +215,7 @@
         .back-button {
             flex: 1;
             padding: 2.5vh;
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: white;
             background: linear-gradient(45deg, #666, #999);
@@ -202,7 +240,8 @@
         .brew-button {
             flex: 2;
             padding: 2.5vh;
-            font-size: 1.4rem;
+            font-size: 1.6rem;
+            max-width: 230px;
             font-weight: 700;
             color: white;
             background: linear-gradient(45deg, #8b4513, #d2691e);
@@ -233,7 +272,7 @@
         .status-message {
             text-align: center;
             margin-top: 1vh;
-            font-size: 1.1rem;
+            font-size: 1.3rem;
             font-weight: 600;
             color: #4CAF50;
             opacity: 0;
@@ -242,6 +281,87 @@
 
         .status-message.show {
             opacity: 1;
+        }
+
+        .container {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: var(--space-lg);
+            padding: var(--space-lg);
+            width: 90%;
+            max-width: 1200px;
+            background: var(--overlay-color);
+            backdrop-filter: blur(6px);
+            border-radius: 16px;
+        }
+
+        .coffee-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .coffee-item {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: var(--space-md);
+            box-shadow:
+                inset 4px 4px 8px var(--shadow-light),
+                4px 4px 8px var(--shadow-dark);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .coffee-item:hover {
+            transform: translateY(-4px);
+            box-shadow:
+                inset 2px 2px 4px var(--shadow-light),
+                8px 8px 16px var(--shadow-dark);
+        }
+
+        .coffee-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: var(--space-sm);
+        }
+
+        .description {
+            font-size: var(--fs-lg);
+            font-weight: 500;
+            margin: var(--space-sm) 0;
+        }
+
+        .price {
+            font-size: var(--fs-md);
+            font-weight: 700;
+        }
+
+        .swipe-indicator {
+            position: fixed;
+            bottom: var(--space-lg);
+            right: var(--space-lg);
+            background: var(--card-bg);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: 20px;
+            box-shadow: 2px 2px 6px var(--shadow-dark);
+            pointer-events: none;
+        }
+
+        .swipe-text {
+            font-size: var(--fs-lg);
+        }
+
+        .finger-animation {
+            font-size: 1.5rem;
+            animation: swipeLeft 2.5s infinite;
+            transform-origin: center right;
+        }
+
+        @keyframes swipeLeft {
+            0%   { transform: translateX(40px); opacity: 0; }
+            20%,80% { opacity: 1; }
+            100% { transform: translateX(-20px); opacity: 0; }
         }
 
         /* Touch-friendly adjustments */
@@ -255,11 +375,11 @@
             }
             
             .title {
-                font-size: 1.8rem;
+                font-size: 2.1rem;
             }
             
             .control-label {
-                font-size: 1.2rem;
+                font-size: 1.3rem;
             }
             
             .slider::-webkit-slider-thumb {
@@ -269,28 +389,40 @@
             
             .brew-button {
                 padding: 2vh;
-                font-size: 1.3rem;
+                font-size: 1.4rem;
+            }
+            
+            .back-button {
+                font-size: 1.4rem;
+            }
+            
+            .value-display {
+                font-size: 1.2rem;
             }
         }
 
         @media (max-height: 700px) {
             .title {
-                font-size: 1.8rem;
+                font-size: 2.1rem;
                 margin-bottom: 0.5vh;
             }
             
             .control-label {
-                font-size: 1.1rem;
+                font-size: 1.3rem;
             }
             
             .value-display {
-                font-size: 1rem;
+                font-size: 1.2rem;
                 padding: 6px 12px;
             }
             
             .brew-button {
-                font-size: 1.2rem;
+                font-size: 1.4rem;
                 padding: 2vh;
+            }
+            
+            .back-button {
+                font-size: 1.4rem;
             }
         }
     </style>
@@ -298,14 +430,16 @@
 <body>
     <div class="machine-container">
         <div class="header">
-            <h1 class="title">☕ Coffee Master</h1>
-            <p class="subtitle">Craft your perfect cup</p>
+            <h1 class="title">
+                <img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2615.png" alt="Coffee" style="width: 36px; height: 36px; vertical-align: middle; margin-right: 8px;">
+                Coffee Master
+            </h1>
         </div>
 
         <div class="controls-wrapper">
             <div class="control-section">
                 <div class="control-label">
-                    <span class="icon">🍯</span>
+                    <img src="../images/sugar (1).png" alt="Honey" class="icon">
                     <span>Sweetness Level</span>
                 </div>
                 <div class="slider-container">
@@ -322,7 +456,7 @@
 
             <div class="control-section">
                 <div class="control-label">
-                    <span class="icon">💪</span>
+                    <img src="../images/coffee-beans.png" alt="Strong" class="icon">
                     <span>Coffee Strength</span>
                 </div>
                 <div class="slider-container">
@@ -336,41 +470,25 @@
                 </div>
                 <div class="value-display" id="strength-value">Medium Strong</div>
             </div>
-
-            <div class="control-section">
-                <div class="control-label">
-                    <span class="icon">🥛</span>
-                    <span>Creamer Amount</span>
-                </div>
-                <div class="slider-container">
-                    <input type="range" min="0" max="100" value="40" class="slider creamer-slider" id="creamer">
-                    <div class="slider-labels">
-                        <span>Black</span>
-                        <span>Splash</span>
-                        <span>Regular</span>
-                        <span>Creamy</span>
-                    </div>
-                </div>
-                <div class="value-display" id="creamer-value">Regular Cream</div>
-            </div>
         </div>
 
         <div class="brew-section">
             <div class="button-row">
-                <button class="back-button" id="back-btn">← BACK</button>
-                <button class="brew-button" id="brew-btn">☕ BREW MY COFFEE</button>
+                <button class="back-button" id="back-btn">
+                    BACK
+                </button>
+                <button class="brew-button" id="brew-btn">
+                    BREW
+                </button>
             </div>
-
         </div>
     </div>
 
     <script>
         const sweetness = document.getElementById('sweetness');
         const strength = document.getElementById('strength');
-        const creamer = document.getElementById('creamer');
         const sweetnessValue = document.getElementById('sweetness-value');
         const strengthValue = document.getElementById('strength-value');
-        const creamerValue = document.getElementById('creamer-value');
         const brewBtn = document.getElementById('brew-btn');
         const status = document.getElementById('status');
 
@@ -381,8 +499,7 @@
         document.getElementById('brew-btn').addEventListener('click', function() {
         const values = {
             sweetness: document.getElementById('sweetness').value,
-            strength: document.getElementById('strength').value,
-            creamer: document.getElementById('creamer').value
+            strength: document.getElementById('strength').value
         };
         window.electronAPI.send('adjust-preference', values);
         });
@@ -402,24 +519,12 @@
             return 'Extra Strong';
         }
 
-        function getCreamerLabel(value) {
-            if (value <= 15) return 'Black Coffee';
-            if (value <= 40) return 'Light Cream';
-            if (value <= 65) return 'Regular Cream';
-            if (value <= 85) return 'Extra Creamy';
-            return 'Very Creamy';
-        }
-
         sweetness.addEventListener('input', (e) => {
             sweetnessValue.textContent = getSweetnessLabel(e.target.value);
         });
 
         strength.addEventListener('input', (e) => {
             strengthValue.textContent = getStrengthLabel(e.target.value);
-        });
-
-        creamer.addEventListener('input', (e) => {
-            creamerValue.textContent = getCreamerLabel(e.target.value);
         });
 
         // Prevent zoom on double tap for better touch experience
