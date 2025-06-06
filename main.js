@@ -210,7 +210,7 @@ app.on('activate', () => {
 
 ipcMain.on('log-input', (event, input) => {
   console.log('Entered:', input);
-  mainWindow.loadFile('./html/adjust.html');
+  mainWindow.loadFile('./html/adjust2.html');
 });
 
 ipcMain.on('cancel-payment', () => {
@@ -228,3 +228,4 @@ ipcMain.on('exit-application', () => {
 ipcMain.on('adjust-preference', (event, values) => {
   console.log('Received preferences:', values);
 });
+
