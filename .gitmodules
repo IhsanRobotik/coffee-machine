@@ -1,0 +1,3 @@
+[submodule "RaspberryPi-5-hx711-cpp-"]
+	path = RaspberryPi-5-hx711-cpp-
+	url = https://github.com/IhsanRobotik/RaspberryPi-5-hx711-cpp-.git
