@@ -3,7 +3,7 @@
 # prerequisites: as described in https://alphacephei.com/vosk/install and also python module `sounddevice` (simply run command `pip install sounddevice`)
 # Example usage using Dutch (nl) recognition model: `python test_microphone.py -m nl`
 # For more help run: `python test_microphone.py -h`
-
+#lol
 import argparse
 import queue
 import sys
