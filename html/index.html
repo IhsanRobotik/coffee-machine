@@ -87,6 +87,9 @@
                 inset 4px 4px 8px var(--shadow-light),
                 4px 4px 8px var(--shadow-dark);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
         }
 
         .coffee-item:hover {
@@ -98,10 +101,11 @@
 
         .coffee-item img {
             width: 100%;
-            height: 193px;
-            object-fit: cover;
+            max-height: 200px;
+            object-fit: contain;
             border-radius: 8px;
             margin-bottom: 2px;
+            flex-shrink: 0;
         }
 
         .description {
@@ -210,34 +214,15 @@
                 const coffee = allCoffeeData[key];
                 const coffeeItem = document.createElement('div');
                 coffeeItem.classList.add('coffee-item');
+                coffeeItem.dataset.index = key;
+                
+                coffeeItem.addEventListener('click', () => {
+                    window.electronAPI.logInput(`${key}`);
+                });
                 
                 const coffeeImage = document.createElement('img');
                 coffeeImage.src = coffee.imagePath;
-                coffeeImage.dataset.index = key;
                 coffeeImage.alt = coffee.description;
-                
-                let downY = null;
-                let isDragging = false;
-                
-                coffeeImage.addEventListener('pointerdown', e => {
-                    downY = e.clientY;
-                    isDragging = false;
-                });
-                
-                coffeeImage.addEventListener('pointermove', e => {
-                    if (downY === null) return;
-                    if (Math.abs(e.clientY - downY) > 5) {
-                        isDragging = true;
-                    }
-                });
-                
-                coffeeImage.addEventListener('pointerup', e => {
-                    if (downY === null) return;
-                    if (!isDragging) {
-                        window.electronAPI.logInput(`${key}`);
-                    }
-                    downY = null;
-                });
                 
                 const coffeeDescription = document.createElement('p');
                 coffeeDescription.classList.add('description');

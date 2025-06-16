@@ -1,3 +1,5 @@
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
+
 // buat fitur pre order jarak jauh 
 // ngrok ngrok http --url=relaxing-natural-eagle.ngrok-free.app 5000
 const { spawn } = require('child_process');
@@ -12,7 +14,7 @@ const SHA512 = require('js-sha512');
 
 let mainWindow;
 let transactionId;
-let price; // Global variable for price
+let price; 
 let lastInput
 
 const productFilePath = path.join(__dirname, 'products.json');
@@ -197,7 +199,6 @@ function createWindow() {
 
 app.whenReady().then(() => {
   createWindow();
-  monitorpayment();
 });
 
 app.on('window-all-closed', () => {
@@ -232,12 +233,41 @@ ipcMain.on('exit-application', () => {
 
 ipcMain.on('adjust-preference', (event, values) => {
   console.log('Received preferences:', values);
-  const creamer = Number(values.creamer);
-  if (typeof lastInput !== 'undefined') {
-    const result = lastInput * creamer;
-    console.log('lastInput * creamer =', result);
-  } else {
-    console.log('No lastInput value available.');
+  console.log('input:', lastInput);
+
+  // Get the selected product using lastInput as key
+  const selectedProduct = product[lastInput];
+  if (!selectedProduct) {
+    console.error('Product not found for input:', lastInput);
+    return;
   }
+
+  // Parse ingredient values as numbers
+  const coffee = Number(selectedProduct.coffee || 0);
+  const sugar = Number(selectedProduct.sugar || 0);
+  const creamer = Number(selectedProduct.creamer || 0);
+  const water = Number(selectedProduct.water || 0);
+  const price = Number(selectedProduct.price || 0);
+  console.log({ coffee, sugar, creamer, water, price});
+  
+  // this code wrong, need to fix
+  // const sugar = Number((values.sweetness) * 2);
+  // const coffee = Number((values.strength) * 2);
+  // dispense(coffee, sugar, 28, 200); 
 });
 
+function dispense(coffee, sugar, creamer, water) {
+    // Adjust the path to your 3motor binary as needed
+    const proc = spawn('../RaspberryPi-5-hx711-cpp-/3motor');
+
+    // Pipe values to the C++ program's stdin
+    proc.stdin.write(`${coffee} ${sugar} ${creamer} ${water}\n`);
+    proc.stdin.end();
+
+    proc.stdout.on('data', data => process.stdout.write(data));
+    proc.stderr.on('data', data => process.stderr.write(data));
+
+    proc.on('close', code => {
+        console.log('done');
+    });
+}

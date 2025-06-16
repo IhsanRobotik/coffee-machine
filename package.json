@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "electron main.js"
+    "start": "cross-env ELECTRON_DISABLE_GPU=1 ELECTRON_ENABLE_LOGGING=1 electron main.js --disable-gpu --disable-gpu-rasterization --disable-software-rasterizer"
   },
+
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -18,5 +19,8 @@
     "js-sha512": "^0.9.0",
     "qrcode": "^1.5.4",
     "uuidv4": "^6.2.13"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
