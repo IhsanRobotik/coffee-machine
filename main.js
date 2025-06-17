@@ -217,6 +217,7 @@ ipcMain.on('log-input', (event, input) => {
   console.log('Entered:', input);
   lastInput = input
   mainWindow.loadFile('./html/adjust2.html');
+  turnOnHeating();
 });
 
 ipcMain.on('cancel-payment', () => {
@@ -235,6 +236,8 @@ ipcMain.on('adjust-preference', (event, values) => {
   console.log('Received preferences:', values);
   console.log('input:', lastInput);
 
+  turnOffHeating();
+
   // Get the selected product using lastInput as key
   const selectedProduct = product[lastInput];
   if (!selectedProduct) {
@@ -242,7 +245,7 @@ ipcMain.on('adjust-preference', (event, values) => {
     return;
   }
 
-  // Parse ingredient values as numbers
+  // // Parse ingredient values as numbers
   const coffee = Number(selectedProduct.coffee || 0);
   const sugar = Number(selectedProduct.sugar || 0);
   const creamer = Number(selectedProduct.creamer || 0);
@@ -250,15 +253,15 @@ ipcMain.on('adjust-preference', (event, values) => {
   const price = Number(selectedProduct.price || 0);
   console.log({ coffee, sugar, creamer, water, price});
   
-  // this code wrong, need to fix
+  // // this code wrong, need to fix
   // const sugar = Number((values.sweetness) * 2);
   // const coffee = Number((values.strength) * 2);
-  // dispense(coffee, sugar, 28, 200); 
+  dispense(coffee, sugar, 28, 200); 
 });
 
 function dispense(coffee, sugar, creamer, water) {
     // Adjust the path to your 3motor binary as needed
-    const proc = spawn('../RaspberryPi-5-hx711-cpp-/3motor');
+    const proc = spawn('./RaspberryPi-5-hx711-cpp-/bin/3motor');
 
     // Pipe values to the C++ program's stdin
     proc.stdin.write(`${coffee} ${sugar} ${creamer} ${water}\n`);
@@ -270,4 +273,28 @@ function dispense(coffee, sugar, creamer, water) {
     proc.on('close', code => {
         console.log('done');
     });
+}
+
+function turnOnHeating() {
+  // Spawns the toggle_29_high binary as a child process
+  const proc = spawn('./RaspberryPi-5-hx711-cpp-/bin/toggle_29_high');
+
+  proc.stdout.on('data', data => process.stdout.write(data));
+  proc.stderr.on('data', data => process.stderr.write(data));
+
+  proc.on('close', code => {
+    console.log('toggle_29_high process exited with code', code);
+  });
+}
+
+function turnOffHeating() {
+  // Spawns the toggle_29_low binary as a child process
+  const proc = spawn('./RaspberryPi-5-hx711-cpp-/bin/toggle_29_low');
+
+  proc.stdout.on('data', data => process.stdout.write(data));
+  proc.stderr.on('data', data => process.stderr.write(data));
+
+  proc.on('close', code => {
+    console.log('toggle_29_low process exited with code', code);
+  });
 }
