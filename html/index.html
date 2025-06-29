@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,13 +19,13 @@
             -webkit-user-select: none;
         }
 
-        :root {
-            --bg-color: #f5f5f5;
-            --overlay-color: rgba(255,255,255,0.6);
-            --text-color: #333;
-            --card-bg: #fff;
-            --shadow-light: rgba(255,255,255,0.8);
-            --shadow-dark: rgba(0,0,0,0.1);
+ :root {
+            --bg-color: #f4f1eb;           /* Warm cream, like milk foam */
+            --overlay-color: rgba(139, 115, 85, 0.15); /* Soft coffee overlay */
+            --text-color: #3c2415;         /* Dark roasted coffee brown */
+            --card-bg: #c08a55;           /* Light coffee with milk */
+            --shadow-light: #cba57f;      /* Light coffee shadow */
+            --shadow-dark: #4e362f;       /* Dark coffee shadow */
             --space-sm: 8px;
             --space-md: 16px;
             --space-lg: 24px;
@@ -50,16 +51,15 @@
             font-size: var(--fs-md);
             line-height: var(--line-height);
             color: var(--text-color);
-            background: var(--bg-color) url('../images/wallpaper.jpg') center/cover no-repeat;
+            background: linear-gradient(135deg, #2c1810 0%, #8b4513 100%) center/cover no-repeat;
             overflow: hidden;
-            height: 100%;
+            height: 100vh;
         }
-
         .container {
             display: grid;
             grid-template-rows: auto 1fr auto;
-            gap: 10px;
-            padding: 10px;
+            gap: 20px;
+            padding: 20px;
             width: 100%;
             max-width: 1200px;
             background: var(--overlay-color);
@@ -76,7 +76,7 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(3, 1fr);
-            gap: 10px;
+            gap: 20px;
         }
 
         .coffee-item {
@@ -101,29 +101,35 @@
 
         .coffee-item img {
             width: 100%;
-            max-height: 200px;
+            max-height: 180px;
             object-fit: contain;
             border-radius: 8px;
-            margin-bottom: 2px;
             flex-shrink: 0;
         }
 
         .description {
             font-size: var(--fs-lg);
             font-weight: 500;
-            margin: 0 0 2px 0;
+            margin: 0 0 2px 12px;
         }
 
         .price {
             font-size: var(--fs-md);
             font-weight: 700;
+            margin: 0 0 2px 12px;
         }
 
         .pagination-controls {
+            margin: 0 9px 0 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: var(--space-lg);
+        }
+
+        .nav-gap {
+            width: var(--space-lg);
+            min-width: 40px; /* Adjust as needed for your desired gap */
+            height: 1px;
         }
 
         .nav-button {
@@ -153,14 +159,9 @@
         <div id="coffeeList" class="coffee-list"></div>
         
         <div class="pagination-controls">
-            <button id="prevBtn" class="nav-button">
-            <img src="../images/left-arrow.png" alt="Left Arrow" width="36" height="36">
-            Back
-            </button>
-            <button id="nextBtn" class="nav-button">
-            Next
-            <img src="../images/right-arrow.png" alt="Right Arrow" width="36" height="36">
-            </button>
+            <button id="prevBtn" class="nav-button">Back</button>
+            <div class="nav-gap"></div>
+            <button id="nextBtn" class="nav-button">Next</button>
         </div>
     </div>
 

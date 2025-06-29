@@ -214,9 +214,12 @@ app.on('activate', () => {
 });
 
 ipcMain.on('log-input', (event, input) => {
-  console.log('Entered:', input);
-  lastInput = input
-  mainWindow.loadFile('./html/adjust2.html');
+  const coffeeName = product[input].description;
+  console.log('Entered:', coffeeName);
+  lastInput = input;
+  mainWindow.loadFile('./html/adjust2.html').then(() => {
+    mainWindow.webContents.send('set-coffee-name', coffeeName);
+  });
   turnOnHeating();
 });
 
@@ -235,6 +238,8 @@ ipcMain.on('exit-application', () => {
 ipcMain.on('adjust-preference', (event, values) => {
   console.log('Received preferences:', values);
   console.log('input:', lastInput);
+
+  // console.log (input.description)
 
   turnOffHeating();
 

@@ -430,9 +430,7 @@
 <body>
     <div class="machine-container">
         <div class="header">
-            <h1 class="title">
-                Preferences
-            </h1>
+            <div id="coffee-name" style="text-align:center; font-size:2.3rem; font-weight: bold; color:#8b4513; margin-bottom:1vh;"></div>
         </div>
 
         <div class="controls-wrapper">
@@ -501,6 +499,10 @@
             strength: document.getElementById('strength').value
         };
         window.electronAPI.send('adjust-preference', values);
+        });
+
+        window.electronAPI.receive('set-coffee-name', (coffeeName) => {
+            document.getElementById('coffee-name').textContent = coffeeName;
         });
 
         function getSweetnessLabel(value) {

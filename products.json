@@ -1,8 +1,8 @@
 {
   "1": {
     "price": 200000,
-    "description": "Espresso",
-    "imagePath": "../images/Singapore-Kopi-Guide (1).png",
+    "description": "Cappuccino",
+    "imagePath": "../images/kopi2/cappuccino.png",
     "coffee": "5",
     "sugar": "0",
     "creamer": "0",
@@ -10,8 +10,8 @@
   },
   "2": {
     "price": 250000,
-    "description": "Americano",
-    "imagePath": "../images/coffee-drinks_americano.webp",
+    "description": "Espresso",
+    "imagePath": "../images/kopi2/espresso.png",
     "coffee": "0",
     "sugar": "0",
     "creamer": "0",
@@ -19,8 +19,8 @@
   },
   "3": {
     "price": 300000,
-    "description": "Breve",
-    "imagePath": "../images/coffee-drinks_breve.webp",
+    "description": "Kopi Susu",
+    "imagePath": "../images/kopi2/kopi-susu.png",
     "coffee": "0",
     "sugar": "0",
     "creamer": "0",
@@ -28,8 +28,8 @@
   },
   "4": {
     "price": 350000,
-    "description": "Caffe Latte",
-    "imagePath": "../images/coffee-drinks_caffe-latte.webp",
+    "description": "Kopi Hitam",
+    "imagePath": "../images/kopi2/kopi-hitam.png",
     "coffee": "0",
     "sugar": "0",
     "creamer": "0",
@@ -37,8 +37,8 @@
   },
   "5": {
     "price": 300000,
-    "description": "Cappuccino",
-    "imagePath": "../images/coffee-drinks_cappuccino.webp",
+    "description": "Susu Hangat",
+    "imagePath": "../images/kopi2/susu-hangat.png",
     "coffee": "0",
     "sugar": "0",
     "creamer": "0",
@@ -46,8 +46,8 @@
   },
   "6": {
     "price": 280000,
-    "description": "Cortado",
-    "imagePath": "../images/coffee-drinks_cortado.webp",
+    "description": "Air Hangat",
+    "imagePath": "../images/kopi2/air-hangat.png",
     "coffee": "0",
     "sugar": "0",
     "creamer": "0",
