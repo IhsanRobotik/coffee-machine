@@ -266,7 +266,7 @@ ipcMain.on('adjust-preference', (event, values) => {
 
 function dispense(coffee, sugar, creamer, water) {
     // Adjust the path to your 3motor binary as needed
-    const proc = spawn('./RaspberryPi-5-hx711-cpp-/bin/3motor');
+    const proc = spawn('./RaspberryPi-5-hx711-cpp-/bin/me_version');
 
     // Pipe values to the C++ program's stdin
     proc.stdin.write(`${coffee} ${sugar} ${creamer} ${water}\n`);
