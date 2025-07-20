@@ -9,5 +9,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     onModificationSuccess: (callback) => ipcRenderer.on('modification-success', callback),
     onModificationFailure: (callback) => ipcRenderer.on('modification-failure', callback),
     send: (channel, data) => ipcRenderer.send(channel, data),
-    receive: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args))
+    receive: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args)),
+    onUpdateStep: (callback) => ipcRenderer.on('update-step', (_, step) => callback(step))
   });

@@ -90,11 +90,11 @@ const monitorpayment = async () => {
 
 const createPayment = async (input) => {
   // Check ngrok tunnels before proceeding
-  const ngrokActive = await checkNgrokTunnels();
-  if (!ngrokActive) {
-    console.error('Cannot create payment: No active ngrok tunnels.');
-    return; 
-  }
+  // const ngrokActive = await checkNgrokTunnels();
+  // if (!ngrokActive) {
+  //   console.error('Cannot create payment: No active ngrok tunnels.');
+  //   return; 
+  // }
   transactionId = uuidv4();
   price = product[input].price; // Assign price to the global variable
   const payload = {
@@ -187,6 +187,7 @@ function createWindow() {
     frame: false,
     resizable: false,
     fullscreen: true,
+    cursor: 'none',
     kiosk: true,
     webPreferences: {
       preload: path.join(__dirname, 'renderer.js'),
@@ -199,6 +200,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
   createWindow();
+  listenForCoffeeCommand();
 });
 
 app.on('window-all-closed', () => {
@@ -258,31 +260,45 @@ ipcMain.on('adjust-preference', (event, values) => {
   const price = Number(selectedProduct.price || 0);
   console.log({ coffee, sugar, creamer, water, price});
   
+  dispense(coffee, sugar, creamer, water);
   // // this code wrong, need to fix
   // const sugar = Number((values.sweetness) * 2);
   // const coffee = Number((values.strength) * 2);
-  dispense(coffee, sugar, 28, 200); 
+  // dispense(coffee, sugar, 28, 200); 
 });
 
 function dispense(coffee, sugar, creamer, water) {
-    // Adjust the path to your 3motor binary as needed
-    const proc = spawn('./RaspberryPi-5-hx711-cpp-/bin/me_version');
+    mainWindow.loadFile('./html/dispensing.html').then(() => {
+        const proc = spawn('./rpi5-sensor-actuator/bin/pump_dispense');
 
-    // Pipe values to the C++ program's stdin
-    proc.stdin.write(`${coffee} ${sugar} ${creamer} ${water}\n`);
-    proc.stdin.end();
+        proc.stdin.write(`${coffee} ${sugar} ${creamer} ${water}\n`);
+        proc.stdin.end();
 
-    proc.stdout.on('data', data => process.stdout.write(data));
-    proc.stderr.on('data', data => process.stderr.write(data));
+        proc.stdout.on('data', data => {
+            const text = data.toString();
+            console.log('stdout:', text);
+            // process.stdout.write(text);
+          const lines = data.toString().split('\n');
+          for (const line of lines) {
+            if (line.trim().startsWith('step:')) {
+              const step = line.trim().replace('step:', '').trim();
+              mainWindow.webContents.send('update-step', step);
+            }
+          }
+        });
 
-    proc.on('close', code => {
-        console.log('done');
+        proc.stderr.on('data', data => process.stderr.write(data));
+        proc.on('close', code => {
+          console.log('done');
+          mainWindow.loadFile('./html/index.html');
+        });
+
     });
 }
 
 function turnOnHeating() {
   // Spawns the toggle_29_high binary as a child process
-  const proc = spawn('./RaspberryPi-5-hx711-cpp-/bin/toggle_29_high');
+  const proc = spawn('./rpi5-sensor-actuator/bin/toggle_29_high');
 
   proc.stdout.on('data', data => process.stdout.write(data));
   proc.stderr.on('data', data => process.stderr.write(data));
@@ -294,12 +310,41 @@ function turnOnHeating() {
 
 function turnOffHeating() {
   // Spawns the toggle_29_low binary as a child process
-  const proc = spawn('./RaspberryPi-5-hx711-cpp-/bin/toggle_29_low');
+  const proc = spawn('./rpi5-sensor-actuator/bin/toggle_29_low');
 
   proc.stdout.on('data', data => process.stdout.write(data));
   proc.stderr.on('data', data => process.stderr.write(data));
 
   proc.on('close', code => {
     console.log('toggle_29_low process exited with code', code);
+  });
+}
+function listenForCoffeeCommand() {
+  const py = spawn(
+    'sh',
+    [
+      '-c',
+      'ffmpeg -loglevel quiet -i http://192.168.1.200:8080/audio.wav -ar 16000 -ac 1 -f s16le - | python3 ./python/python_vosk/example/transcribe_live.py'
+    ],
+    { cwd: path.resolve(__dirname) }
+  );
+
+  py.stdout.on('data', (data) => {
+    const output = data.toString();
+    process.stdout.write('[PYTHON STDOUT]: ');
+    process.stdout.write(output);
+    if (output.includes('COFFEE_DETECTED')) { 
+      dispense(10, 10, 10, 10);
+    }
+  });
+
+  py.stderr.on('data', (data) => {
+    const output = data.toString();
+    process.stderr.write('[PYTHON STDERR]: ');
+    process.stderr.write(output);
+  });
+
+  py.on('close', (code) => {
+    console.log(`Python process exited with code ${code}`);
   });
 }

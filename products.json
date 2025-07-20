@@ -3,46 +3,46 @@
     "price": 200000,
     "description": "Cappuccino",
     "imagePath": "../images/kopi2/cappuccino.png",
-    "coffee": "5",
+    "coffee": "6",
     "sugar": "0",
-    "creamer": "0",
-    "water": "0"
+    "creamer": "15",
+    "water": "60"
   },
   "2": {
     "price": 250000,
     "description": "Espresso",
     "imagePath": "../images/kopi2/espresso.png",
-    "coffee": "0",
+    "coffee": "7",
     "sugar": "0",
     "creamer": "0",
-    "water": "0"
+    "water": "30"
   },
   "3": {
     "price": 300000,
     "description": "Kopi Susu",
     "imagePath": "../images/kopi2/kopi-susu.png",
-    "coffee": "0",
-    "sugar": "0",
-    "creamer": "0",
-    "water": "0"
+    "coffee": "6",
+    "sugar": "8",
+    "creamer": "20",
+    "water": "60"
   },
   "4": {
     "price": 350000,
     "description": "Kopi Hitam",
     "imagePath": "../images/kopi2/kopi-hitam.png",
-    "coffee": "0",
-    "sugar": "0",
+    "coffee": "8",
+    "sugar": "8",
     "creamer": "0",
-    "water": "0"
+    "water": "80"
   },
   "5": {
     "price": 300000,
     "description": "Susu Hangat",
     "imagePath": "../images/kopi2/susu-hangat.png",
     "coffee": "0",
-    "sugar": "0",
-    "creamer": "0",
-    "water": "0"
+    "sugar": "5",
+    "creamer": "25",
+    "water": "60"
   },
   "6": {
     "price": 280000,
@@ -51,51 +51,51 @@
     "coffee": "0",
     "sugar": "0",
     "creamer": "0",
-    "water": "0"
+    "water": "100"
   },
   "7": {
     "price": 320000,
     "description": "Double Espresso",
     "imagePath": "../images/coffee-drinks_double-espresso.webp",
-    "coffee": "0",
+    "coffee": "14",
     "sugar": "0",
     "creamer": "0",
-    "water": "0"
+    "water": "60"
   },
   "8": {
     "price": 300000,
     "description": "Flat White",
     "imagePath": "../images/coffee-drinks_flat-white.webp",
-    "coffee": "0",
+    "coffee": "7",
     "sugar": "0",
-    "creamer": "0",
-    "water": "0"
+    "creamer": "20",
+    "water": "60"
   },
   "9": {
     "price": 270000,
     "description": "Macchiato",
     "imagePath": "../images/coffee-drinks_macchiato.webp",
-    "coffee": "0",
+    "coffee": "7",
     "sugar": "0",
-    "creamer": "0",
-    "water": "0"
+    "creamer": "5",
+    "water": "30"
   },
   "10": {
     "price": 260000,
     "description": "Long Black",
     "imagePath": "../images/coffee-drinks_long-black.webp",
-    "coffee": "0",
+    "coffee": "7",
     "sugar": "0",
     "creamer": "0",
-    "water": "0"
+    "water": "100"
   },
   "11": {
     "price": 280000,
     "description": "Long Macchiato",
     "imagePath": "../images/coffee-drinks_long-macchiato.webp",
-    "coffee": "0",
+    "coffee": "7",
     "sugar": "0",
-    "creamer": "0",
-    "water": "0"
+    "creamer": "5",
+    "water": "80"
   }
 }

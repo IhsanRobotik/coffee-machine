@@ -6,6 +6,9 @@
     <title>Coffee Machine</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            cursor: none !important;
+        }
         :root {
             --bg-color: #f5f5f5;
             --overlay-color: rgba(255,255,255,0.6);
@@ -142,7 +145,6 @@
             outline: none;
             -webkit-appearance: none;
             appearance: none;
-            cursor: pointer;
             transition: all 0.3s ease;
         }
 
@@ -153,7 +155,6 @@
             height: 50px;
             border-radius: 50%;
             background: linear-gradient(45deg, #8b4513, #d2691e);
-            cursor: pointer;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             transition: all 0.2s ease;
         }
@@ -168,7 +169,6 @@
             height: 32px;
             border-radius: 50%;
             background: linear-gradient(45deg, #8b4513, #d2691e);
-            cursor: pointer;
             border: none;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
@@ -221,7 +221,6 @@
             background: linear-gradient(45deg, #666, #999);
             border: none;
             border-radius: 25px;
-            cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 8px 16px rgba(102, 102, 102, 0.3);
             touch-action: manipulation;
@@ -247,7 +246,6 @@
             background: linear-gradient(45deg, #8b4513, #d2691e);
             border: none;
             border-radius: 25px;
-            cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 8px 16px rgba(139, 69, 19, 0.3);
             touch-action: manipulation;
@@ -436,7 +434,6 @@
         <div class="controls-wrapper">
             <div class="control-section">
                 <div class="control-label">
-                    <img src="../images/sugar (1).png" alt="Honey" class="icon">
                     <span>Sweetness Level</span>
                 </div>
                 <div class="slider-container">
@@ -453,7 +450,6 @@
 
             <div class="control-section">
                 <div class="control-label">
-                    <img src="../images/coffee-beans.png" alt="Strong" class="icon">
                     <span>Coffee Strength</span>
                 </div>
                 <div class="slider-container">
