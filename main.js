@@ -24,6 +24,9 @@ require('dotenv').config();
 const authorization = process.env.MIDTRANS_API_AUTH;
 const ServerKey = process.env.MIDTRANS_SERVER_KEY;
 
+// const authorization = process.env.MIDTRANS_API_AUTH_PROD;
+// const ServerKey = process.env.MIDTRANS_SERVER_KEY_PROD;
+
 const headers = {
   'Content-Type': 'application/json',
   'Authorization': authorization
@@ -95,12 +98,12 @@ const createPayment = async (input) => {
   //   console.error('Cannot create payment: No active ngrok tunnels.');
   //   return; 
   // }
+  price = product[input].price; 
   transactionId = uuidv4();
-  price = product[input].price; // Assign price to the global variable
   const payload = {
     "transaction_details": {
       "order_id": transactionId,
-      "gross_amount": price
+      "gross_amount": input
     },
     "custom_expiry": {
       "expiry_duration": 5,
@@ -111,6 +114,8 @@ const createPayment = async (input) => {
   };
 
   const baseUrl = 'https://api.sandbox.midtrans.com/v2/charge';
+  // const baseUrl = 'https://api.midtrans.com/v2/charge'
+
 
   try {
     const response = await axios.post(baseUrl, payload, { headers });
@@ -133,15 +138,6 @@ const createPayment = async (input) => {
   }
 };
 
-const createAdjustPreference = async (input) => {
-  // sweetness
-
-
-  // make display system status “Heating,” “Grinding,” “Brewing,” “Cleaning.”
-
-  // h
-}
-
 const cancelPayment = async () => {
   const url = `https://api.sandbox.midtrans.com/v2/${transactionId}/cancel`;
   const options = {
@@ -160,25 +156,6 @@ const cancelPayment = async () => {
     return null;
   }
 };
-
-// Run a Python script and return output
-function runPythonScript(scriptPath, args) {
-  const pyProg = spawn('python', [scriptPath].concat(args));
-
-  let data = '';
-  pyProg.stdout.on('data', (stdout) => {
-    data += stdout.toString();
-  });
-
-  pyProg.stderr.on('data', (stderr) => {
-    console.log(`stderr: ${stderr}`);
-  });
-
-  pyProg.on('close', (code) => {
-    console.log(`child process exited with code ${code}`);
-    console.log(data);
-  });
-}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -239,6 +216,8 @@ ipcMain.on('exit-application', () => {
 
 ipcMain.on('adjust-preference', (event, values) => {
   console.log('Received preferences:', values);
+
+    console.log('Received preferences:', values);
   console.log('input:', lastInput);
 
   // console.log (input.description)
@@ -260,11 +239,11 @@ ipcMain.on('adjust-preference', (event, values) => {
   const price = Number(selectedProduct.price || 0);
   console.log({ coffee, sugar, creamer, water, price});
   
-  dispense(coffee, sugar, creamer, water);
-  // // this code wrong, need to fix
-  // const sugar = Number((values.sweetness) * 2);
-  // const coffee = Number((values.strength) * 2);
-  // dispense(coffee, sugar, 28, 200); 
+  createPayment(price);	
+  //turnOffHeating();
+
+  //amount = getProductDetails(lastInput);
+  //dispense(amount.coffee, amount.sugar, amount.creamer, amount.water);
 });
 
 function dispense(coffee, sugar, creamer, water) {
@@ -324,18 +303,46 @@ function listenForCoffeeCommand() {
     'sh',
     [
       '-c',
-      'ffmpeg -loglevel quiet -i http://192.168.1.200:8080/audio.wav -ar 16000 -ac 1 -f s16le - | python3 ./python/python_vosk/example/transcribe_live.py'
+      'python3 python/python_vosk/example/complete_voice_rec.py'
     ],
     { cwd: path.resolve(__dirname) }
   );
 
+
   py.stdout.on('data', (data) => {
     const output = data.toString();
-    process.stdout.write('[PYTHON STDOUT]: ');
     process.stdout.write(output);
-    if (output.includes('COFFEE_DETECTED')) { 
-      dispense(10, 10, 10, 10);
+    if (output.includes('ESPRESSO_DETECTED')) { 
+      createPayment(2);
+      // amount = getProductDetails(2);
+      // console.log (amount);
+      // dispense(amount.coffee, amount.sugar, amount.creamer, amount.water);
     }
+    //   // product = coffee
+    //   //display preference pafe
+    // }
+    // if (output.includes('CAPPUCCINO_DETECTED')) {
+    //   amount = getProductDetails(1);
+    //   console.log (amount);
+    //   dispense(amount.coffee, amount.sugar, amount.creamer, amount.water);
+    // }
+    // if (output.includes('AMERICANO_DETECTED')) {
+    //   amount = getProductDetails(4);
+    //   console.log (amount);
+    //   dispense(amount.coffee, amount.sugar, amount.creamer, amount.water);
+    // }
+    // if (output.includes('MILK_DETECTED')) {
+    //   amount = getProductDetails(5);
+    //   console.log (amount);
+    //   dispense(amount.coffee, amount.sugar, amount.creamer, amount.water);
+    // }
+    // if (output.includes('WATER_DETECTED')) {
+    //   amount = getProductDetails(6);
+    //   console.log (amount);
+    //   dispense(amount.coffee, amount.sugar, amount.creamer, amount.water);
+    // }
+    // if (output.includes('SUGAR_FREE
+
   });
 
   py.stderr.on('data', (data) => {
@@ -347,4 +354,23 @@ function listenForCoffeeCommand() {
   py.on('close', (code) => {
     console.log(`Python process exited with code ${code}`);
   });
+}
+
+function getProductDetails (lastInput) {
+
+  const selectedProduct = product[lastInput];
+  if (!selectedProduct) {
+    console.error('Product not found for input:', lastInput);
+    return;
+  }
+
+  // // Parse ingredient values as numbers
+  const coffee = Number(selectedProduct.coffee || 0);
+  const sugar = Number(selectedProduct.sugar || 0);
+  const creamer = Number(selectedProduct.creamer || 0);
+  const water = Number(selectedProduct.water || 0);
+  const price = Number(selectedProduct.price || 0);
+  console.log({ coffee, sugar, creamer, water, price});
+  return { coffee, sugar, creamer, water, price };
+  
 }

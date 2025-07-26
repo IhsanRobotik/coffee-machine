@@ -4,12 +4,17 @@ import soundfile as sf
 from vosk import Model, KaldiRecognizer
 import json
 import os
+import time
 
+timeout = 10 
+start_time = time.time()
 model_path = os.path.join(os.path.dirname(__file__), "vosk-model-small-en-us-0.15")
 model = Model(model_path)
 rec = KaldiRecognizer(model, 16000)
 
 while True:
+    if time.time() - start_time > timeout:
+        break
     data = sys.stdin.buffer.read(4000)
     if len(data) == 0:
         break
@@ -22,7 +27,7 @@ while True:
         except Exception:
             pass
         if "espresso" in text:
-            print("COFFEE_DETECTED", flush=True) 
+            print("ESPRESSO_DETECTED", flush=True) 
         if "cappuccino" in text:
             print("CAPPUCCINO_DETECTED", flush=True)
         if "americano" in text:
