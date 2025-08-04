@@ -21,10 +21,10 @@
     "price": 300000,
     "description": "Kopi Susu",
     "imagePath": "../images/kopi2/kopi-susu.png",
-    "coffee": "6",
+    "coffee": "12",
     "sugar": "8",
     "creamer": "20",
-    "water": "60"
+    "water": "80"
   },
   "4": {
     "price": 350000,

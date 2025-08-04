@@ -6,12 +6,12 @@
     <title>Dispensing</title>
     <style>
         :root {
-            --bg-color: #f4f1eb;
-            --overlay-color: rgba(139, 115, 85, 0.15);
+            /* --bg-color: #f4f1eb;
+            --overlay-color: rgba(139, 115, 85, 0.15); */
             --text-color: #3c2415;
-            --card-bg: #c08a55;
+            /* --card-bg: #c08a55;
             --shadow-light: #cba57f;
-            --shadow-dark: #4e362f;
+            --shadow-dark: #4e362f; */
             --space-sm: 8px;
             --space-md: 16px;
             --space-lg: 24px;
@@ -39,29 +39,40 @@
             align-items: center;
         }
 
-        .container {
-            background-color: var(--card-bg);
-            padding: var(--space-lg);
-            border-radius: 12px;
-            box-shadow: 0 4px 8px var(--shadow-dark), 0 6px 20px var(--shadow-light);
-            text-align: center;
-        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('../images/wallpaper.jpg');
+            background-size: cover;
+            filter: blur(3px);
+            z-index: -1;
+        } */
+
 
         h1 {
             font-size: var(--fs-xl);
             color: var(--text-color);
             margin-bottom: var(--space-md);
             line-height: var(--line-height);
+            border: 2px solid rgba(60, 36, 21, 0.3);
+            border-radius: 8px;
+            padding: 12px 20px;
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .spinner {
             width: 50px;
             height: 50px;
-            border: 6px solid var(--overlay-color);
+            border: 6px solid rgba(139, 115, 85, 0.15);
             border-top: 6px solid var(--text-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto;
+            box-shadow: 0 0 0 2px rgba(60, 36, 21, 0.3);
         }
 
         @keyframes spin {

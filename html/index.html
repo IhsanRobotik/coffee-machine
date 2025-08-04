@@ -62,8 +62,20 @@
             padding: 20px;
             width: 100%;
             max-width: 1200px;
-            background: var(--overlay-color);
-            backdrop-filter: blur(6px);
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('../images/wallpaper.jpg');
+            background-size: cover;
+            filter: blur(3px);
+            z-index: -1;
         }
 
         h1 {
@@ -83,10 +95,10 @@
             background: var(--card-bg);
             border-radius: 12px;
             padding: var(--space-md);
-            box-shadow:
+            /* box-shadow:
                 inset 4px 4px 8px var(--shadow-light),
                 4px 4px 8px var(--shadow-dark);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease; */
             display: flex;
             flex-direction: column;
         }

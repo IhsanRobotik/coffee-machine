@@ -72,7 +72,7 @@ const monitorpayment = async () => {
     if (req.body.transaction_status === 'settlement') {
       mainWindow.loadFile('./html/success.html');
       setTimeout(() => {
-        mainWindow.loadFile('./html/index.html');
+        dispense()
       }, 2000);
 
     } else if (req.body.transaction_status === 'expire') {
@@ -99,11 +99,12 @@ const createPayment = async (input) => {
   //   return; 
   // }
   price = product[input].price; 
+  console.log(price, "sex")
   transactionId = uuidv4();
   const payload = {
     "transaction_details": {
       "order_id": transactionId,
-      "gross_amount": input
+      "gross_amount": price
     },
     "custom_expiry": {
       "expiry_duration": 5,
@@ -173,6 +174,7 @@ function createWindow() {
 
   mainWindow.setMenuBarVisibility(false);
   mainWindow.loadFile('./html/index.html');
+  monitorpayment()
 }
 
 app.whenReady().then(() => {
@@ -199,7 +201,6 @@ ipcMain.on('log-input', (event, input) => {
   mainWindow.loadFile('./html/adjust2.html').then(() => {
     mainWindow.webContents.send('set-coffee-name', coffeeName);
   });
-  turnOnHeating();
 });
 
 ipcMain.on('cancel-payment', () => {
@@ -217,12 +218,12 @@ ipcMain.on('exit-application', () => {
 ipcMain.on('adjust-preference', (event, values) => {
   console.log('Received preferences:', values);
 
-    console.log('Received preferences:', values);
+  console.log('Received preferences:', values);
   console.log('input:', lastInput);
 
   // console.log (input.description)
 
-  turnOffHeating();
+  // turnOffHeating();
 
   // Get the selected product using lastInput as key
   const selectedProduct = product[lastInput];
@@ -236,14 +237,15 @@ ipcMain.on('adjust-preference', (event, values) => {
   const sugar = Number(selectedProduct.sugar || 0);
   const creamer = Number(selectedProduct.creamer || 0);
   const water = Number(selectedProduct.water || 0);
-  const price = Number(selectedProduct.price || 0);
+  // const price = Number(selectedProduct.price || 0);
   console.log({ coffee, sugar, creamer, water, price});
   
-  createPayment(price);	
+  price = product[lastInput].price; 
+  createPayment(lastInput);	
+  // monitorpayment();
+
   //turnOffHeating();
 
-  //amount = getProductDetails(lastInput);
-  //dispense(amount.coffee, amount.sugar, amount.creamer, amount.water);
 });
 
 function dispense(coffee, sugar, creamer, water) {
@@ -275,29 +277,30 @@ function dispense(coffee, sugar, creamer, water) {
     });
 }
 
-function turnOnHeating() {
-  // Spawns the toggle_29_high binary as a child process
-  const proc = spawn('./rpi5-sensor-actuator/bin/toggle_29_high');
+// function turnOnHeating() {
+//   // Spawns the toggle_29_high binary as a child process
+//   const proc = spawn('./rpi5-sensor-actuator/bin/toggle_29_high');
 
-  proc.stdout.on('data', data => process.stdout.write(data));
-  proc.stderr.on('data', data => process.stderr.write(data));
+//   proc.stdout.on('data', data => process.stdout.write(data));
+//   proc.stderr.on('data', data => process.stderr.write(data));
 
-  proc.on('close', code => {
-    console.log('toggle_29_high process exited with code', code);
-  });
-}
+//   proc.on('close', code => {
+//     console.log('toggle_29_high process exited with code', code);
+//   });
+// }
 
-function turnOffHeating() {
-  // Spawns the toggle_29_low binary as a child process
-  const proc = spawn('./rpi5-sensor-actuator/bin/toggle_29_low');
+// function turnOffHeating() {
+//   // Spawns the toggle_29_low binary as a child process
+//   const proc = spawn('./rpi5-sensor-actuator/bin/toggle_29_low');
 
-  proc.stdout.on('data', data => process.stdout.write(data));
-  proc.stderr.on('data', data => process.stderr.write(data));
+//   proc.stdout.on('data', data => process.stdout.write(data));
+//   proc.stderr.on('data', data => process.stderr.write(data));
 
-  proc.on('close', code => {
-    console.log('toggle_29_low process exited with code', code);
-  });
-}
+//   proc.on('close', code => {
+//     console.log('toggle_29_low process exited with code', code);
+//   });
+// }
+
 function listenForCoffeeCommand() {
   const py = spawn(
     'sh',
