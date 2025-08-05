@@ -72,7 +72,7 @@ const monitorpayment = async () => {
     if (req.body.transaction_status === 'settlement') {
       mainWindow.loadFile('./html/success.html');
       setTimeout(() => {
-        dispense()
+        mainWindow.loadFile('./html/index.html');
       }, 2000);
 
     } else if (req.body.transaction_status === 'expire') {
@@ -174,7 +174,6 @@ function createWindow() {
 
   mainWindow.setMenuBarVisibility(false);
   mainWindow.loadFile('./html/index.html');
-  monitorpayment()
 }
 
 app.whenReady().then(() => {
@@ -242,7 +241,7 @@ ipcMain.on('adjust-preference', (event, values) => {
   
   price = product[lastInput].price; 
   createPayment(lastInput);	
-  // monitorpayment();
+  monitorpayment();
 
   //turnOffHeating();
 
