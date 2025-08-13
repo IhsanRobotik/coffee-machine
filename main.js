@@ -78,10 +78,8 @@ const monitorpayment = async () => {
     if (req.body.transaction_status === 'settlement') {
       mainWindow.loadFile('./html/success.html');
       setTimeout(() => {
-        mainWindow.loadFile('./html/index.html');
-      }, 2000);
-      
       dispense(coffee, sugar, creamer, water)
+      }, 1000);
 
     } else if (req.body.transaction_status === 'expire') {
       mainWindow.loadFile('./html/expired.html');

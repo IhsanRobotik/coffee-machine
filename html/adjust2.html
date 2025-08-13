@@ -436,6 +436,20 @@ body::before {
                 font-size: 1.4rem;
             }
         }
+
+        .spinner {
+            margin: 0 auto;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #8b4513;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg);}
+            100% { transform: rotate(360deg);}
+        }
     </style>
 </head>
 <body>
@@ -487,6 +501,10 @@ body::before {
                     BREW
                 </button>
             </div>
+            <div id="spinner" style="display:none; text-align:center; margin-top:2vh;">
+                <div class="spinner"></div>
+                <div style="color:#8b4513; font-weight:600; margin-top:1vh;">Sedang Memproses...</div>
+            </div>
         </div>
     </div>
 
@@ -503,11 +521,16 @@ body::before {
         });
 
         document.getElementById('brew-btn').addEventListener('click', function() {
-        const values = {
-            sweetness: document.getElementById('sweetness').value,
-            strength: document.getElementById('strength').value
-        };
-        window.electronAPI.send('adjust-preference', values);
+            // Show spinner and disable buttons
+            document.getElementById('spinner').style.display = 'block';
+            document.getElementById('brew-btn').disabled = true;
+            document.getElementById('back-btn').disabled = true;
+
+            const values = {
+                sweetness: document.getElementById('sweetness').value,
+                strength: document.getElementById('strength').value
+            };
+            window.electronAPI.send('adjust-preference', values);
         });
 
         window.electronAPI.receive('set-coffee-name', (coffeeName) => {
