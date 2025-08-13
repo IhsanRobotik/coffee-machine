@@ -15,7 +15,13 @@ const SHA512 = require('js-sha512');
 let mainWindow;
 let transactionId;
 let price; 
-let lastInput
+let lastInput;
+let coffee;
+let creamer;
+let water;
+let sugar;
+//adjustment value
+let values;
 
 const productFilePath = path.join(__dirname, 'products.json');
 let product = JSON.parse(fs.readFileSync(productFilePath, 'utf8'));
@@ -74,6 +80,8 @@ const monitorpayment = async () => {
       setTimeout(() => {
         mainWindow.loadFile('./html/index.html');
       }, 2000);
+      
+      dispense(coffee, sugar, creamer, water)
 
     } else if (req.body.transaction_status === 'expire') {
       mainWindow.loadFile('./html/expired.html');
@@ -217,7 +225,7 @@ ipcMain.on('exit-application', () => {
 ipcMain.on('adjust-preference', (event, values) => {
   console.log('Received preferences:', values);
 
-  console.log('Received preferences:', values);
+  // console.log('Received preferences:', values);
   console.log('input:', lastInput);
 
   // console.log (input.description)
@@ -231,12 +239,12 @@ ipcMain.on('adjust-preference', (event, values) => {
     return;
   }
 
-  // // Parse ingredient values as numbers
-  const coffee = Number(selectedProduct.coffee || 0);
-  const sugar = Number(selectedProduct.sugar || 0);
-  const creamer = Number(selectedProduct.creamer || 0);
-  const water = Number(selectedProduct.water || 0);
-  // const price = Number(selectedProduct.price || 0);
+  // Parse ingredient values as numbers
+  coffee = Number(selectedProduct.coffee || 0) + Number(values.strength || 0);
+  sugar = Number(selectedProduct.sugar || 0) + Number(values.sweetness || 0);
+  creamer = Number(selectedProduct.creamer || 0);
+  water = Number(selectedProduct.water || 0);
+
   console.log({ coffee, sugar, creamer, water, price});
   
   price = product[lastInput].price; 
