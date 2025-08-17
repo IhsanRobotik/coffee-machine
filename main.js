@@ -203,7 +203,7 @@ ipcMain.on('log-input', (event, input) => {
   const coffeeName = product[input].description;
   console.log('Entered:', coffeeName);
   lastInput = input;
-  mainWindow.loadFile('./html/adjust2.html').then(() => {
+  mainWindow.loadFile('./html/adjust.html').then(() => {
     mainWindow.webContents.send('set-coffee-name', coffeeName);
   });
 });

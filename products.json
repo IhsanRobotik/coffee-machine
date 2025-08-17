@@ -6,16 +6,16 @@
     "coffee": "6",
     "sugar": "0",
     "creamer": "15",
-    "water": "60"
+    "water": "100"
   },
   "2": {
     "price": 250000,
     "description": "Espresso",
     "imagePath": "../images/kopi2/espresso.png",
-    "coffee": "7",
+    "coffee": "40",
     "sugar": "0",
     "creamer": "0",
-    "water": "30"
+    "water": "80"
   },
   "3": {
     "price": 300000,
@@ -30,8 +30,8 @@
     "price": 350000,
     "description": "Kopi Hitam",
     "imagePath": "../images/kopi2/kopi-hitam.png",
-    "coffee": "8",
-    "sugar": "8",
+    "coffee": "20",
+    "sugar": "12",
     "creamer": "0",
     "water": "80"
   },
@@ -41,8 +41,8 @@
     "imagePath": "../images/kopi2/susu-hangat.png",
     "coffee": "0",
     "sugar": "5",
-    "creamer": "25",
-    "water": "60"
+    "creamer": "40",
+    "water": "90"
   },
   "6": {
     "price": 280000,
@@ -51,16 +51,16 @@
     "coffee": "0",
     "sugar": "0",
     "creamer": "0",
-    "water": "100"
+    "water": "120"
   },
   "7": {
     "price": 320000,
     "description": "Double Espresso",
     "imagePath": "../images/coffee-drinks_double-espresso.webp",
-    "coffee": "14",
+    "coffee": "24",
     "sugar": "0",
     "creamer": "0",
-    "water": "60"
+    "water": "80"
   },
   "8": {
     "price": 300000,
