@@ -20,8 +20,6 @@ let coffee;
 let creamer;
 let water;
 let sugar;
-//adjustment value
-let values;
 
 const productFilePath = path.join(__dirname, 'products.json');
 let product = JSON.parse(fs.readFileSync(productFilePath, 'utf8'));
@@ -245,6 +243,7 @@ ipcMain.on('adjust-preference', (event, values) => {
 
   console.log({ coffee, sugar, creamer, water, price});
   
+
   price = product[lastInput].price; 
   createPayment(lastInput);	
   monitorpayment();
